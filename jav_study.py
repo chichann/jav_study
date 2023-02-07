@@ -20,6 +20,8 @@ from .crawl import jav_crawl, mteam_crawl
 server = mbot_api
 _LOGGER = logging.getLogger(__name__)
 torrent_folder = '/data/plugins/jav_study/torrents'
+if not os.path.exists(torrent_folder):
+    os.makedirs(torrent_folder)
 
 
 @plugin.task('jav_list_task', '定时爬取JAV影片榜单', cron_expression='34 23 * * *')
