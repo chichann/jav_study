@@ -1,0 +1,75 @@
+{
+  "name": "jav_study",
+  "title": "JAV_学习资料",
+  "author": "NaNaKo_",
+  "description": "JAV_学习资料查询及下载",
+  "version": "0.1",
+  "requirements": [],
+  "configField": [
+    {
+      "fieldName": "uid",
+      "fieldType": "Enum",
+      "label": "推送用户",
+      "helperText": "选择接收推送的用户,用户管理要独立设置推送配置才生效",
+      "enumValuesRef": "UserList",
+      "multiValue": true
+    },
+    {
+      "fieldName": "ToChannelName",
+      "fieldType": "String",
+      "label": "推送通道名称",
+      "helperText": "选择想要推送的通道,逗号间隔",
+      "defaultValue": "telegram"
+    },
+    {
+      "fieldName": "proxy",
+      "fieldType": "String",
+      "label": "代理地址",
+      "helperText": "JAV网站访问需代理地址，形如http://10.0.0.10:7890",
+      "defaultValue": ""
+    },
+    {
+      "fieldName": "user_agent",
+      "fieldType": "String",
+      "label": "访问网站的user-agent",
+      "helperText": "访问JAV网站的user-agent",
+      "defaultValue": ""
+    },
+    {
+      "fieldName": "client_name",
+      "fieldType": "String",
+      "label": "配置的qb下载器名称",
+      "helperText": "配置的qb下载器名称",
+      "defaultValue": ""
+    },
+    {
+      "fieldName": "down_path",
+      "fieldType": "String",
+      "label": "下载到qb的路径",
+      "helperText": "下载到qb的路径",
+      "defaultValue": ""
+    },
+    {
+      "fieldName": "translate_enable",
+      "fieldType": "Bool",
+      "label": "是否使用百度翻译",
+      "helperText": "是否使用百度翻译标题，需要填写appid和sercet，不勾选则不生效",
+      "defaultValue": false
+    },
+    {
+      "fieldName": "appid",
+      "fieldType": "String",
+      "label": "百度翻译接口appid",
+      "helperText": "百度翻译接口appid，详情见http://api.fanyi.baidu.com/manage/developer",
+      "defaultValue": ""
+    },
+    {
+      "fieldName": "sercet",
+      "fieldType": "String",
+      "label": "百度翻译接口sercet",
+      "helperText": "百度翻译接口sercet，详情见http://api.fanyi.baidu.com/manage/developer",
+      "defaultValue": ""
+    }
+  ],
+  "logoUrl": "/plugins/jav_study/logo.jpg"
+}
