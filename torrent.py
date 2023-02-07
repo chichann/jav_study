@@ -2,60 +2,12 @@ import os
 from mbot.core.plugins import plugin
 from mbot.core.plugins import PluginContext, PluginMeta
 from mbot.openapi import mbot_api
-from bs4 import BeautifulSoup, SoupStrainer
 import requests
 import logging
-from .jav_study import *
+
 _LOGGER = logging.getLogger(__name__)
 server = mbot_api
 site_list = server.site.list()
-
-
-def search_mteam(keyword):
-    cookie, ua, proxy, domain = get_mteam_conf()
-    url = f'https://kp.m-team.cc/adult.php?incldead=1&spstate=0&inclbookmarked=0&search={keyword}&search_area=0&search_mode=0'
-    headers = {
-        'cookie': cookie,
-        'user-agent': ua,
-        'Referer': "https://kp.m-team.cc",
-    }
-    proxies = {
-        'http': proxy,
-        'https': proxy,
-    }
-    dict_cookie = str_cookies_to_dict(cookie)
-    response = requests.get(url, headers=headers, cookies=dict_cookie, proxies=proxies, timeout=30).text
-    if 'cloudflare' in response:
-        _LOGGER.error('可能遭遇CloudFlare五秒盾，一会再试试吧。')
-        return False
-    soup_tmp = SoupStrainer('table', {'class': 'torrents'})
-    soup = BeautifulSoup(response, 'html.parser', parse_only=soup_tmp)
-    trs = soup.select('table.torrents > tr:has(table.torrentname)')
-    torrents = []
-    for tr in trs:
-        title = tr.select('a[title][href^="details.php?id="]')[0].get('title')
-        download_url = tr.select('a[href^="download.php?id="]')[0].get('href')
-        size = tr.select('td.rowfollow:nth-last-child(6)')[0].text
-        seeders = tr.select('td.rowfollow:nth-last-child(5)')[0].text.replace(',', '')
-        leechers = tr.select('td.rowfollow:nth-last-child(4)')[0].text.replace(',', '')
-        grabs = tr.select('td.rowfollow:nth-last-child(3)')[0].text.replace(',', '')
-        describe_list = tr.select('table.torrentname > tr > td.embedded')[0].contents
-        describe = describe_list[len(describe_list) - 1].text
-        img = tr.select('img[alt="torrent thumbnail"]')[0].get('src')
-        torrent_rank = {
-            'title': title,
-            'download_url': download_url,
-            'size': size,
-            'seeders': seeders,
-            'leechers': leechers,
-            'grabs': grabs,
-            'describe': describe,
-            'img': img,
-        }
-        weight = get_weight(title, int(grabs), int(seeders), describe)
-        torrent_rank['weight'] = weight
-        torrents.append(torrent_rank)
-    return torrents
 
 
 def get_weight(title, grabs: int, seeders: int, describe):
@@ -132,20 +84,3 @@ def download_torrent(code, download_url, torrents_folder):
         torrent.write(res.content)
         torrent.flush()
     return torrent_path
-
-
-def str_cookies_to_dict(cookies):
-    dict_cookie = {}
-    str_cookie_list = cookies.split(';')
-    for cookie in str_cookie_list:
-        if cookie.strip(' '):
-            cookie_key_value = cookie.split('=')
-            if len(cookie_key_value) < 2:
-                continue
-            key = cookie_key_value[0]
-            value = cookie_key_value[1]
-            dict_cookie[key] = value
-    return dict_cookie
-
-
-

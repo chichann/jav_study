@@ -1,5 +1,4 @@
 import _md5
-from .jav_study import *
 import logging
 import random
 import requests
