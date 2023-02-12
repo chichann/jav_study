@@ -31,6 +31,10 @@ def jav_list_task():
 
 @plugin.task('un_download_code_research_task', '未下载列表重新搜索资源', cron_expression='16 7,17 * * *')
 def un_download_code_research_task():
+    un_download_research()
+
+
+def un_download_research():
     un_download_code = get_cache(sign='un_download_code')
     downloaded_code_now = []
     if not un_download_code:
@@ -47,7 +51,6 @@ def un_download_code_research_task():
         for item in downloaded_code_now:
             un_download_code.remove(item)
         set_cache(sign='un_download_code', code_list=un_download_code)
-
 
 def like_list_judge(like_list):
     code_list, exist_list = [], []
