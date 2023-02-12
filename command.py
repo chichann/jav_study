@@ -44,7 +44,7 @@ def jav_search_command(
         return PluginCommandResponse(False, f'番号提交搜索失败，错误信息：{e}')
 
 
-@plugin.command(name='jav_research_command', title='JAV订阅未下载重新搜索', desc='点击执行JAV订阅未下载重新搜索', icon='AutoAwesome',
+@plugin.command(name='jav_research_command', title='JAV订阅中重新搜索', desc='点击执行JAV订阅中番号重新搜索', icon='AutoAwesome',
                 run_in_background=True)
 def jav_research_command(ctx: PluginCommandContext):
     try:
