@@ -24,10 +24,12 @@ plugin.register_blueprint('jav_study', bp)
 
 @bp.route('/search', methods=["GET"])
 def search():
+    from .common import judge_translate
     keyword = request.args.get('keyword') if request.args.get('keyword') else ''
     if keyword:
         search_result_json: list = jav_crawl().jav_search(keyword)
         if search_result_json is not None:
+            search_result_json = judge_translate(search_result_json)
             return api_result(code=0, message='查询成功', data=search_result_json)
         else:
             return api_result(code=1, message='查询失败,请查看日志', data='')

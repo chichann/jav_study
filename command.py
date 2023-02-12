@@ -3,7 +3,7 @@ from mbot.openapi import mbot_api
 from mbot.core.params import ArgSchema, ArgType
 import logging
 
-from .jav_study import torrent_main, run_and_download_list
+from .jav_study import torrent_main, run_and_download_list, un_download_code_research_task
 from .common import set_true_code, add_un_download_list, judge_never_sub
 
 _LOGGER = logging.getLogger(__name__)
@@ -42,3 +42,12 @@ def jav_search_command(
     except Exception as e:
         logging.error(f'番号提交搜索失败，错误信息：{e}', exc_info=True)
         return PluginCommandResponse(False, f'番号提交搜索失败，错误信息：{e}')
+
+
+@plugin.command(name='jav_research_command', title='JAV订阅未下载重新搜索', desc='点击执行JAV订阅未下载重新搜索', icon='AutoAwesome',
+                run_in_background=True)
+def jav_research_command(ctx: PluginCommandContext):
+    try:
+        un_download_code_research_task()
+    except Exception as e:
+        logging.error(f'JAV订阅未下载重新搜索失败，错误信息：{e}', exc_info=True)

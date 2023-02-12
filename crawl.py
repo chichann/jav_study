@@ -99,10 +99,6 @@ class jav_crawl:
             else:
                 av_id = soup.select('div#video_title > h3 > a')[0].contents[0].split(' ', 1)[0]
                 av_title = soup.select('div#video_title > h3 > a')[0].contents[0].split(' ', 1)[1]
-                if self.translate_enable:
-                    av_title_translated = trans_main(av_title, self.appid, self.sercet)
-                    if av_title_translated:
-                        av_title = av_title_translated
                 video_date = soup.select('div#video_date > table > tr > td.text')[0].contents[0]
                 genres = soup.select('div#video_genres > table > tr > td.text > span.genre > a')
                 genre = ''

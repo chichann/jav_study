@@ -11,6 +11,7 @@ server = mbot_api
 def jav_list_echo(result):
     caption_list, img_list = [], []
     if result:
+        result = judge_translate(result)
         for item in result:
             av_id = f'番号：{item["av_id"]}\n'
             av_title = f'标题：{item["av_title"]}\n'
@@ -22,6 +23,18 @@ def jav_list_echo(result):
             caption_list.append(caption)
             img_list.append(av_img)
         return caption_list, img_list
+
+
+def judge_translate(data):
+    from .event import event_var
+    from .translate import trans_main
+    if event_var.translate_enable:
+        for item in data:
+            before = item['av_title']
+            after = trans_main(before)
+            if after:
+                data['av_title'] = after
+    return data
 
 
 def get_cache(sign):

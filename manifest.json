@@ -3,8 +3,11 @@
   "title": "JAV_学习资料",
   "author": "NaNaKo_",
   "description": "JAV_学习资料查询及下载",
-  "version": "0.1",
+  "version": "0.3",
   "requirements": [],
+  "dependencies": {
+    "appVersion": ">=1.9.23"
+  },
   "configField": [
     {
       "fieldName": "uid",
@@ -71,5 +74,6 @@
       "defaultValue": ""
     }
   ],
-  "logoUrl": "/plugins/jav_study/logo.jpg"
+  "logoUrl": "/plugins/jav_study/logo.jpg",
+  "payImageUrl": "https://p.xmoviebot.com/donate/chacha_wechat.jpg"
 }

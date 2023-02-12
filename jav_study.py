@@ -24,12 +24,12 @@ if not os.path.exists(torrent_folder):
     os.makedirs(torrent_folder)
 
 
-@plugin.task('jav_list_task', '定时爬取JAV影片榜单', cron_expression='34 23 * * *')
+@plugin.task('jav_list_task', '定时爬取JAV影片榜单', cron_expression='34 */6 * * *')
 def jav_list_task():
     run_and_download_list()
 
 
-@plugin.task('un_download_code_research_task', '未下载列表重新搜索资源', cron_expression='12 23 * * *')
+@plugin.task('un_download_code_research_task', '未下载列表重新搜索资源', cron_expression='16 7,17 * * *')
 def un_download_code_research_task():
     un_download_code = get_cache(sign='un_download_code')
     downloaded_code_now = []

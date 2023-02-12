@@ -35,5 +35,8 @@ def req_trans(query, appid, sercet):
         return None
 
 
-def trans_main(from_str, appid, sercet):
+def trans_main(from_str):
+    from .event import event_var
+    appid = event_var.appid
+    sercet = event_var.sercet
     return req_trans(from_str, appid, sercet)
