@@ -19,10 +19,11 @@
     },
     {
       "fieldName": "ToChannelName",
-      "fieldType": "String",
+      "fieldType": "Enum",
       "label": "推送通道名称",
       "helperText": "选择想要推送的通道,逗号间隔",
-      "defaultValue": "telegram"
+      "enumValuesRef": "ChannelNameList",
+      "multiValue": true
     },
     {
       "fieldName": "proxy",
@@ -41,9 +42,9 @@
     {
       "fieldName": "client_name",
       "fieldType": "String",
-      "label": "配置的qb下载器名称",
-      "helperText": "配置的qb下载器名称",
-      "defaultValue": ""
+      "label": "配置的下载器名称",
+      "helperText": "配置的下载器名称",
+      "defaultValue": "qb"
     },
     {
       "fieldName": "down_path",

@@ -132,7 +132,7 @@ def torrent_main(code):
                 title = f'「{code}」提交下载失败，可能是下载器已存在该种子\n'
                 send_notify(title, caption, pic)
                 flag = 2
-                return f'「{code}」提交下载失败，可能是下载器已存在该种子。请检查QB，并且该种子不会自动重试。', flag
+                return f'「{code}」提交下载失败，可能是下载器已存在该种子。', flag
         else:
             _LOGGER.error(f'「{code}」没有找到合适的种子')
             flag = 0

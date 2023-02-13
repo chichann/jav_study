@@ -33,7 +33,7 @@ def judge_translate(data):
             before = item['av_title']
             after = trans_main(before)
             if after:
-                data['av_title'] = after
+                item['av_title'] = after
     return data
 
 
@@ -128,18 +128,17 @@ def judge_never_sub(code):
 
 def send_notify(title, content, pic):
     from .event import event_var
-    channel_table = event_var.channel.split(',') if event_var.channel else None
-    for channel_item in channel_table:
-        if event_var.message_to_uid:
-            for _ in event_var.message_to_uid:
-                server.notify.send_message_by_tmpl('{{title}}', '{{a}}', {
-                    'title': title,
-                    'a': content,
-                    'pic_url': pic
-                }, to_uid=_, to_channel_name=channel_item)
-        else:
+    channel_item = event_var.channel
+    if event_var.message_to_uid:
+        for _ in event_var.message_to_uid:
             server.notify.send_message_by_tmpl('{{title}}', '{{a}}', {
                 'title': title,
                 'a': content,
                 'pic_url': pic
-            }, to_channel_name=channel_item)
+            }, to_uid=_, to_channel_name=channel_item)
+    else:
+        server.notify.send_message_by_tmpl('{{title}}', '{{a}}', {
+            'title': title,
+            'a': content,
+            'pic_url': pic
+        }, to_channel_name=channel_item)
