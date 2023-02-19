@@ -122,6 +122,93 @@ class jav_crawl:
             return None
 
 
+class javbus_crawl:
+    def __init__(self):
+        self.headers = event_var.headers
+        self.proxies = event_var.proxies
+        # self.appid = event_var.appid
+        # self.sercet = event_var.sercet
+        # self.translate_enable = event_var.translate_enable
+
+    def crawl_start_code(self, star):
+        try:
+            url = 'https://www.javbus.com/searchstar/' + star
+            r = requests.get(url, headers=self.headers, proxies=self.proxies, timeout=30)
+            soup = BeautifulSoup(r.text, 'html.parser')
+            stars = soup.select('a.avatar-box')
+            if len(stars) > 1:
+                return None
+            if len(stars) < 1:
+                return None
+            url = stars[0].get('href')
+            star_id = url.split('/')[-1]
+            star_name = stars[0].select('div.photo-frame > img')[0].get('title')
+            star_avatar = 'https://www.javbus.com' + stars[0].select('div.photo-frame > img')[0].get('src')
+            star_avatar = self.save_avatar_and_upload(star_name, star_avatar)
+            star_detail = self.crawl_actor_detail(star_id)
+            star_info = {
+                'star_id': star_id, 'star_name': star_name, 'star_avatar': star_avatar, 'star_detail': star_detail}
+            return star_info
+        except Exception as e:
+            logging.error(f'javbus搜索演员失败，原因为{e}', exc_info=True)
+            return None
+
+    def save_avatar_and_upload(self, star_name, star_avatar):
+        import os
+        try:
+            avatar_img_path = '/plugins/jav_study/avatar_img'
+            if not os.path.exists(avatar_img_path):
+                os.makedirs(avatar_img_path)
+            r = requests.get(star_avatar, headers=self.headers, proxies=self.proxies, timeout=30)
+            if r.status_code == 200:
+                with open(f'{avatar_img_path}/{star_name}.jpg', 'wb') as f:
+                    f.write(r.content)
+            r = requests.post('https://sm.ms/api/v2/upload',
+                              headers={'Authorization': 'APUGQJKYLuNWjZv86O2Shg3CHDrRpBlV'},
+                              files={'smfile': open(f'{avatar_img_path}/{star_name}.jpg', 'rb')},
+                              proxies=self.proxies, timeout=30)
+            if r.status_code == 200:
+                return r.json()['data']['url']
+            else:
+                return None
+        except Exception as e:
+            logging.error(f'javbus保存头像并上传失败，原因为{e}', exc_info=True)
+            return None
+
+    def crawl_actor_detail(self, star_id):
+        try:
+            url = 'https://www.javbus.com/star/' + star_id
+            r = requests.get(url, headers=self.headers, proxies=self.proxies, timeout=30)
+            soup = BeautifulSoup(r.text, 'html.parser')
+            actor_details = soup.select('div.avatar-box > div.photo-info > p')
+            content = []
+            if actor_details:
+                for item in actor_details:
+                    content.append(item.text)
+            return content
+        except Exception as e:
+            logging.error(f'javbus获取演员详情失败，原因为{e}', exc_info=True)
+            return None
+
+    def crawl_list_by_star(self, star_id):
+        try:
+            url = 'https://www.javbus.com/star/' + star_id
+            r = requests.get(url, headers=self.headers, proxies=self.proxies, timeout=30)
+            soup = BeautifulSoup(r.text, 'html.parser')
+            movies = soup.select('a.movie-box')
+            movie_list = []
+            for movie in movies:
+                movie_code = movie.get('href').split('/')[-1]
+                movie_name = movie.select('div.photo-info > span')[0].contents[0]
+                movie_date = movie.select('div.photo-info > span > date')[1].text
+                movie_list.append(
+                    {'movie_code': movie_code, 'movie_name': movie_name, 'release_date': movie_date, 'status': 0})
+            return movie_list
+        except Exception as e:
+            logging.error(f'javbus获取演员影片列表失败，原因为{e}', exc_info=True)
+            return None
+
+
 class mteam_crawl:
 
     def __init__(self):
@@ -172,4 +259,3 @@ class mteam_crawl:
             torrent_rank['weight'] = weight
             torrents.append(torrent_rank)
         return torrents
-

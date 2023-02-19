@@ -42,12 +42,12 @@ def get_cache(sign):
     return cache_list
 
 
-def set_cache(sign, code_list):
+def set_cache(sign, value):
     try:
-        server.common.set_cache('jav_search', sign, code_list)
+        server.common.set_cache('jav_search', sign, value)
         return True
     except Exception as e:
-        logging.error(f'jav_search写入缓存失败，错误信息：{e}')
+        logging.error(f'jav_study写入缓存失败，错误信息：{e}')
         return False
 
 
@@ -92,7 +92,7 @@ def add_un_download_list(code):
         un_download_code.append(code)
     else:
         un_download_code = [code]
-    if set_cache(sign='un_download_code', code_list=un_download_code):
+    if set_cache(sign='un_download_code', value=un_download_code):
         _LOGGER.info(f'「{code}」已添加到未下载列表，等待下次重试。')
         caption, pic = jav_list_echo(jav_crawl().jav_search(code))
         send_notify(title='有新的学习资料添加到未下载列表\n',
@@ -107,7 +107,7 @@ def add_download_list(code):
         downloaded_code.append(code)
     else:
         downloaded_code = [code]
-    if set_cache(sign='downloaded_code', code_list=downloaded_code):
+    if set_cache(sign='downloaded_code', value=downloaded_code):
         _LOGGER.info(f'「{code}」已添加到已下载列表，不会再重复下载。')
         return True
 

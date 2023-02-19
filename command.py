@@ -3,7 +3,7 @@ from mbot.openapi import mbot_api
 from mbot.core.params import ArgSchema, ArgType
 import logging
 
-from .jav_study import torrent_main, run_and_download_list, un_download_research, get_jav_sub_list, delete_jav_sub
+from .jav_study import torrent_main, run_and_download_list, un_download_research, get_jav_sub_list, delete_jav_sub, sub_by_star
 from .common import set_true_code, add_un_download_list, judge_never_sub
 
 _LOGGER = logging.getLogger(__name__)
@@ -20,9 +20,9 @@ def jav_list_command(ctx: PluginCommandContext):
         return PluginCommandResponse(False, f'JAV最受欢迎影片获取失败，错误信息：{e}')
 
 
-@plugin.command(name='jav_search', title='番号搜索', desc='输入番号自动搜索提交下载', icon='AutoAwesome',
+@plugin.command(name='jav_sub_code', title='订阅番号', desc='输入番号自动搜索提交下载', icon='AutoAwesome',
                 run_in_background=True)
-def jav_search_command(
+def jav_sub_code_command(
         ctx: PluginCommandContext,
         code: ArgSchema(ArgType.String, '番号', '输入番号自动提交搜索下载')
 ):
@@ -42,6 +42,24 @@ def jav_search_command(
     except Exception as e:
         logging.error(f'番号提交搜索失败，错误信息：{e}', exc_info=True)
         return PluginCommandResponse(False, f'番号提交搜索失败，错误信息：{e}')
+
+
+@plugin.command(name='jav_sub_star', title='订阅老师', desc='点击订阅老师相关资料', icon='AutoAwesome',
+                run_in_background=True)
+def jav_sub_star_command(
+        ctx: PluginCommandContext,
+        star: ArgSchema(ArgType.String, '老师名字', '输入老师名字'),
+        date: ArgSchema(ArgType.String, '日期', '输入日期，格式为：2021-01-01')
+):
+    try:
+        _LOGGER.info(f'老师「{star}」提交订阅')
+        if sub_by_star(star, date):
+            return PluginCommandResponse(True, f'老师「{star}」提交订阅成功')
+        else:
+            return PluginCommandResponse(False, f'老师「{star}」提交订阅失败')
+    except Exception as e:
+        logging.error(f'老师提交订阅失败，错误信息：{e}', exc_info=True)
+        return PluginCommandResponse(False, f'老师提交订阅失败，错误信息：{e}')
 
 
 @plugin.command(name='jav_research_command', title='JAV订阅中重新搜索', desc='点击执行JAV订阅中番号重新搜索',
