@@ -42,10 +42,10 @@ def un_download_research():
         return
     _LOGGER.info(f'开始重新搜索未下载列表中的番号：{",".join(un_download_code)}')
     for code in un_download_code:
-        search_result, flag = torrent_main(code)
-        if flag == 0:
+        code_sub_result = torrent_main(code)
+        if code_sub_result["flag"] == 0:
             _LOGGER.info(f'「{code}」重新搜索未找到资源，等待下次重试。')
-        elif flag == 1:
+        elif code_sub_result["flag"] == 1:
             downloaded_code_now.append(code)
         time.sleep(30)
     if downloaded_code_now:
@@ -102,18 +102,18 @@ def run_and_download_list():
             if code_list:
                 for code in code_list:
                     _LOGGER.info(f'番号「{code}」提交搜索')
-                    sub_result, flag = torrent_main(code)
-                    if flag == 0:
-                        _LOGGER.error(f'JAV最受欢迎影片{sub_result}')
+                    code_sub_result = torrent_main(code)
+                    if code_sub_result["flag"] == 0:
+                        _LOGGER.error(f'JAV最受欢迎影片{code_sub_result["sub_result"]}')
                         add_un_download_list(code)
                         time.sleep(30)
                         continue
-                    elif flag == 1:
-                        _LOGGER.info(f'JAV最受欢迎影片{sub_result}')
+                    elif code_sub_result["flag"] == 1:
+                        _LOGGER.info(f'JAV最受欢迎影片{code_sub_result["sub_result"]}')
                         time.sleep(30)
                         continue
                     else:
-                        _LOGGER.error(f'JAV最受欢迎影片{sub_result}')
+                        _LOGGER.error(f'JAV最受欢迎影片{code_sub_result["sub_result"]}')
                         time.sleep(30)
                         continue
                 _LOGGER.info('JAV最受欢迎影片本次新增影片搜索完成')
@@ -128,6 +128,13 @@ def run_and_download_list():
 
 
 def torrent_main(code):
+    code_sub_result = {
+        "code": code,
+        "sub_result": "",
+        "flag": 0,
+        "caption": "",
+        "torrent": "",
+    }
     torrents = mteam_crawl().search_mteam(keyword=code)
     if torrents:
         best_torrent = get_best_torrent(torrents)
@@ -138,29 +145,34 @@ def torrent_main(code):
                 _LOGGER.info(f'「{code}」种子下载成功')
             else:
                 _LOGGER.error(f'「{code}」种子下载失败，下载地址：{best_torrent["download_url"]}')
-                flag = 0
-                return f'「{code}」种子下载失败，请检查站点连通性，下载地址：{best_torrent["download_url"]}', flag
+                code_sub_result["flag"] = 0
+                code_sub_result["sub_result"] = f'「{code}」种子下载失败，请检查站点连通性，下载地址：{best_torrent["download_url"]}'
+                return code_sub_result
             caption, pic = best_torrent_echo(best_torrent)
             res = download(torrent_path=torrent_path, save_path=event_var.down_path, category=None,
                            client_name=event_var.client_name)
             if res:
                 _LOGGER.info(f'「{code}」提交下载成功')
-                title = f'「{code}」提交下载成功\n'
-                send_notify(title, caption, pic)
+                code_sub_result["sub_result"] = f'「{code}」提交下载成功\n'
+                code_sub_result["flag"] = 1
+                code_sub_result["caption"] = caption
+                code_sub_result["torrent"] = best_torrent
                 add_download_list(code)
-                flag = 1
-                return best_torrent, flag
+                return code_sub_result
             else:
                 _LOGGER.info(f'「{code}」提交下载失败，可能是下载器已存在该种子')
-                title = f'「{code}」提交下载失败，可能是下载器已存在该种子\n'
-                send_notify(title, caption, pic)
-                flag = 2
-                return f'「{code}」提交下载失败，可能是下载器已存在该种子。', flag
+                code_sub_result["sub_result"] = f'「{code}」提交下载失败，可能是下载器已存在该种子\n'
+                code_sub_result["flag"] = 2
+                code_sub_result["caption"] = caption
+                code_sub_result["torrent"] = best_torrent
+                return code_sub_result
         else:
             _LOGGER.error(f'「{code}」没有找到合适的种子')
-            flag = 0
-            return f'「{code}」没有找到合适的种子', flag
+            code_sub_result["flag"] = 0
+            code_sub_result["sub_result"] = f'「{code}」没有找到合适的种子'
+            return code_sub_result
     else:
         _LOGGER.error(f'「{code}」没有找到任何资源')
-        flag = 0
-        return f'「{code}」没有找到任何资源', flag
+        code_sub_result["flag"] = 0
+        code_sub_result["sub_result"] = f'「{code}」没有找到任何资源'
+        return code_sub_result

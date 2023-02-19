@@ -63,13 +63,13 @@ def sub():
         if not judge_never_sub(code):
             return api_result(code=1, message='订阅失败', data=f'「{code}」已经订阅过了')
         else:
-            sub_result, flag = torrent_main(code)
-            if flag == 1:
-                return api_result(code=0, message='订阅并下载成功', data=sub_result)
-            elif flag == 0:
+            code_sub_result = torrent_main(code)
+            if code_sub_result["flag"] == 1:
+                return api_result(code=0, message='订阅并下载成功', data=code_sub_result["sub_result"])
+            elif code_sub_result["flag"] == 0:
                 add_un_download_list(code)
-                return api_result(code=0, message='订阅成功，但找不到资源', data=sub_result)
+                return api_result(code=0, message='订阅成功，但找不到资源', data=code_sub_result["sub_result"])
             else:
-                return api_result(code=1, message='订阅失败', data=sub_result)
+                return api_result(code=1, message='订阅失败', data=code_sub_result["sub_result"])
     else:
         return api_result(code=1, message='请输入番号', data='')
