@@ -40,6 +40,7 @@ def un_download_research():
     if not un_download_code:
         _LOGGER.info('未下载列表为空')
         return
+    _LOGGER.info(f'开始重新搜索未下载列表中的番号：{",".join(un_download_code)}')
     for code in un_download_code:
         search_result, flag = torrent_main(code)
         if flag == 0:
@@ -67,6 +68,28 @@ def like_list_judge(like_list):
         return [code for code in code_list if code not in exist_list]
     else:
         return code_list
+
+
+def get_jav_sub_list():
+    un_download_code = get_cache(sign='un_download_code')
+    if un_download_code:
+        # 把列表un_download_code中的每个值转成字典格式,参数有name和value
+        sub_list = [{'name': code, 'value': code} for code in un_download_code]
+        return sub_list
+
+
+def delete_jav_sub(code):
+    _LOGGER.info(f'开始删除订阅「{code}」')
+    code = ''.join(code)
+    un_download_code = get_cache(sign='un_download_code')
+    if un_download_code:
+        if code in un_download_code:
+            un_download_code.remove(code)
+            _LOGGER.info(f'删除订阅「{code}」成功')
+            set_cache(sign='un_download_code', code_list=un_download_code)
+            return True
+        else:
+            return False
 
 
 def run_and_download_list():

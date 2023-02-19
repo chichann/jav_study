@@ -3,7 +3,7 @@ from mbot.openapi import mbot_api
 from mbot.core.params import ArgSchema, ArgType
 import logging
 
-from .jav_study import torrent_main, run_and_download_list, un_download_research
+from .jav_study import torrent_main, run_and_download_list, un_download_research, get_jav_sub_list, delete_jav_sub
 from .common import set_true_code, add_un_download_list, judge_never_sub
 
 _LOGGER = logging.getLogger(__name__)
@@ -44,10 +44,26 @@ def jav_search_command(
         return PluginCommandResponse(False, f'番号提交搜索失败，错误信息：{e}')
 
 
-@plugin.command(name='jav_research_command', title='JAV订阅中重新搜索', desc='点击执行JAV订阅中番号重新搜索', icon='AutoAwesome',
-                run_in_background=True)
+@plugin.command(name='jav_research_command', title='JAV订阅中重新搜索', desc='点击执行JAV订阅中番号重新搜索',
+                icon='AutoAwesome', run_in_background=True)
 def jav_research_command(ctx: PluginCommandContext):
     try:
         un_download_research()
     except Exception as e:
         logging.error(f'JAV订阅未下载重新搜索失败，错误信息：{e}', exc_info=True)
+
+
+@plugin.command(name='jav_sub_delete', title='JAV订阅删除', desc='选择番号删除订阅', icon='AutoAwesome',
+                run_in_background=True)
+def jav_sub_delete(ctx: PluginCommandContext,
+                   code: ArgSchema(ArgType.Enum, '番号', '选择番号删除订阅，仅支持单次删除一个。',
+                                   enum_values=get_jav_sub_list)
+                   ):
+    try:
+        if delete_jav_sub(code):
+            return PluginCommandResponse(True, f'番号「{code}」删除成功')
+        else:
+            return PluginCommandResponse(False, f'番号「{code}」删除失败')
+    except Exception as e:
+        logging.error(f'JAV订阅删除失败，错误信息：{e}', exc_info=True)
+        return PluginCommandResponse(False, f'JAV订阅删除失败，错误信息：{e}')

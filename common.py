@@ -67,7 +67,7 @@ def str_cookies_to_dict(cookies):
 
 def set_true_code(code):
     code_list = code.split('-')
-    code = ''.join(code_list).replace('\r', '').replace('\n', '')
+    code = ''.join(code_list).replace('\r', '').replace('\n', '').replace(' ', '')
     length = len(code)
     index = length - 1
     num = ''
