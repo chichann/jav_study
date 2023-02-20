@@ -1,3 +1,5 @@
+import json
+
 from mbot.core.plugins import plugin
 from mbot.core.plugins import PluginContext, PluginMeta
 from mbot.openapi import mbot_api
@@ -104,8 +106,8 @@ def get_sub_star_list():
     if sub_star:
         for item in sub_star:
             name = item['star_name']
-            value = item['star_name']
-            sub_star_list.append({'name': name, 'value': value})
+            date = item['monitor_date']
+            sub_star_list.append({'name': f'{name} | {date}', 'value': name})
         return sub_star_list
 
 
@@ -116,11 +118,20 @@ def delete_star_sub(star_name):
     if sub_star:
         for item in sub_star:
             if item['star_name'] == star_name:
+                del_url = item['del_avatar_img']
+                del_avatar_img(del_url)
                 sub_star.remove(item)
                 _LOGGER.info(f'删除订阅「{star_name}」成功')
                 set_cache(sign='actor_sub', value=sub_star)
                 set_cache(sign=star_name, value=[])
                 return True
+
+
+def del_avatar_img(url):
+    if url:
+        r = requests.get(url, proxies=event_var.proxies, timeout=10)
+        if r.status_code == 200:
+            return True
 
 
 def run_and_download_list():
@@ -160,40 +171,59 @@ def run_and_download_list():
 
 def sub_by_star(star, date):
     import datetime
-    star_info = javbus_crawl().crawl_start_code(star)
-    star_info['monitor_date'] = datetime.datetime.strptime(date, '%Y-%m-%d').strftime('%Y-%m-%d')
-    if star_info:
+    date = datetime.datetime.strptime(date, '%Y-%m-%d').strftime('%Y-%m-%d')
+    actor_sub = get_cache(sign="actor_sub")
+    update_result = update_monitor_date(star, date)
+    if not update_result.get("flag"):
+        star_info = javbus_crawl().crawl_star_code(star)
+        if not star_info:
+            _LOGGER.error(f'「{star}」演员信息获取失败,请检查演员名是否正确')
+            return None
+        star_info["monitor_date"] = date
         _LOGGER.info(f'「{star}」演员信息获取成功')
-        actor_sub = get_cache(sign='actor_sub')
         if not actor_sub:
             actor_sub = [star_info]
+            star_info["movie_list"] = []
+            msg = '订阅成功'
         else:
             if star_info["star_id"] not in [x["star_id"] for x in actor_sub]:
                 actor_sub.append(star_info)
+                star_info["movie_list"] = []
+                msg = '订阅成功'
             else:
-                _LOGGER.error(f'「{star}」已经订阅过了')
-                return False
+                msg = '已订阅过，更新监控日期成功'
+        set_cache(sign=star_info["star_name"], value=star_info)
         set_cache(sign='actor_sub', value=actor_sub)
-        star_info['movie_list'] = []
-        set_cache(sign=star_info['star_name'], value=star_info)
-        title = f'「{star_info["star_name"]}」订阅成功\n'
-        now = datetime.datetime.now().strftime('%Y-%m-%d')
-        caption = ''
-        if star_info['star_detail']:
-            for item in star_info['star_detail']:
-                caption += item + '\n'
-        caption += f'\n订阅时间：{now}\n'
-        caption += f'开始监控{star_info["monitor_date"]}之后的影片'
-        pic = star_info['star_avatar']
-        send_notify(title, caption, pic)
-        _LOGGER.info(f'「{star_info["star_name"]}」订阅成功')
-        search_code_by_single_star(star_info)
-        single_star_info = get_cache(sign=star_info['star_name'])
-        run_sub_single_star_code(single_star_info)
-        return True
     else:
-        _LOGGER.error(f'「{star}」订阅失败')
-        return False
+        msg = '已订阅过，更新监控日期成功'
+        star_info = update_result.get("star_info")
+    title = f'「{star_info["star_name"]}」{msg}\n'
+    now = datetime.datetime.now().strftime('%Y-%m-%d')
+    caption = ''
+    if star_info["star_detail"]:
+        for item in star_info["star_detail"]:
+            caption += item + '\n'
+    caption += f'\n订阅时间：{now}\n'
+    caption += f'开始监控{star_info["monitor_date"]}之后的影片'
+    pic = star_info['star_avatar']
+    send_notify(title, caption, pic)
+    _LOGGER.info(f'「{star_info["star_name"]}」{msg}')
+    _LOGGER.info(f'开始监控{star_info["monitor_date"]}之后的影片')
+    search_code_by_single_star(star_info)
+    single_star_info = get_cache(sign=star_info["star_name"])
+    run_sub_single_star_code(single_star_info)
+    return True
+
+
+def update_monitor_date(star, date):
+    actor_sub = get_cache(sign='actor_sub')
+    if actor_sub:
+        for star_info in actor_sub:
+            if star_info["star_name"] == star:
+                star_info["monitor_date"] = date
+                set_cache(sign='actor_sub', value=actor_sub)
+                return {'flag': True, 'star_info': star_info}
+    return {'flag': False}
 
 
 def single_codee_judge_record(code):
@@ -217,23 +247,23 @@ def search_code_by_star_record():
 
 
 def search_code_by_single_star(star_info):
-    movie_list = javbus_crawl().crawl_list_by_star(star_info['star_id'])
-    star_info = get_cache(sign=star_info['star_name'])
+    movie_list = javbus_crawl().crawl_list_by_star(star_info["star_id"])
+    star_info = get_cache(sign=star_info["star_name"])
     if movie_list:
-        if not star_info['movie_list']:
-            star_info['movie_list'] = movie_list
+        if not star_info["movie_list"]:
+            star_info["movie_list"] = movie_list
         else:
             for movie in movie_list:
                 # 判断movie_list中每一项是否在item['movie_list']中已存在，如果存在则跳过，不存在则添加
-                if movie['movie_code'] not in [x['movie_code'] for x in star_info['movie_list']]:
-                    star_info['movie_list'].append(movie)
-    for movie in star_info['movie_list']:
-        if movie['status'] == 0:
-            judge = single_codee_judge_record(movie['movie_code'])
+                if movie["movie_code"] not in [x["movie_code"] for x in star_info["movie_list"]]:
+                    star_info["movie_list"].append(movie)
+    for movie in star_info["movie_list"]:
+        if movie["status"] == 0:
+            judge = single_codee_judge_record(movie["movie_code"])
             if not judge:
-                movie['status'] = 1
+                movie["status"] = 1
             continue
-    set_cache(sign=star_info['star_name'], value=star_info)
+    set_cache(sign=star_info["star_name"], value=star_info)
     _LOGGER.info(f'「{star_info["star_name"]}」影片同步数据完成')
 
 
@@ -249,13 +279,13 @@ def run_sub_star_record():
 
 
 def run_sub_single_star_code(star_info):
-    if star_info['movie_list']:
-        for movie in star_info['movie_list']:
+    if star_info["movie_list"]:
+        for movie in star_info["movie_list"]:
             # 判断movie['status'] == 0，以及movie['release_date']是否大于monitor_date,如果是则提交下载
-            if movie['status'] == 0:
-                if movie['release_date'] >= star_info['monitor_date']:
+            if movie["status"] == 0:
+                if movie["release_date"] >= star_info["monitor_date"]:
                     _LOGGER.info(f'开始搜索「{star_info["star_name"]}」的影片「{movie["movie_code"]}」')
-                    code_sub_result = torrent_main(movie['movie_code'])
+                    code_sub_result = torrent_main(movie["movie_code"])
                     if code_sub_result["flag"] == 0:
                         _LOGGER.error(
                             f'「{movie["movie_code"]}」下载失败，错误信息：{code_sub_result["sub_result"]}')
@@ -264,13 +294,13 @@ def run_sub_single_star_code(star_info):
                         continue
                     elif code_sub_result["flag"] == 1:
                         _LOGGER.info(f'「{movie["movie_code"]}」下载成功')
-                        movie['status'] = 1
+                        movie["status"] = 1
                         time.sleep(30)
                         continue
                     else:
                         _LOGGER.error(
                             f'「{movie["movie_code"]}」下载失败，错误信息：{code_sub_result["sub_result"]}')
-                        movie['status'] = 1
+                        movie["status"] = 1
                         time.sleep(30)
                         continue
         _LOGGER.info(f'{star_info["star_name"]}的影片搜索完成')
@@ -306,20 +336,20 @@ def torrent_main(code):
                            client_name=event_var.client_name)
             if res:
                 _LOGGER.info(f'「{code}」提交下载成功')
-                code_sub_result["sub_result"] = f'「{code}」提交下载成功\n'
+                code_sub_result["sub_result"] = f'「{code}」提交下载成功'
                 code_sub_result["flag"] = 1
                 code_sub_result["caption"] = caption
                 code_sub_result["torrent"] = best_torrent
                 add_download_list(code)
-                send_notify(code_sub_result["sub_result"], code_sub_result["caption"], pic)
+                send_notify(f'{code_sub_result["sub_result"]}\n', code_sub_result["caption"], pic)
                 return code_sub_result
             else:
                 _LOGGER.info(f'「{code}」提交下载失败，可能是下载器已存在该种子')
-                code_sub_result["sub_result"] = f'「{code}」提交下载失败，可能是下载器已存在该种子\n'
+                code_sub_result["sub_result"] = f'「{code}」提交下载失败，可能是下载器已存在该种子'
                 code_sub_result["flag"] = 2
                 code_sub_result["caption"] = caption
                 code_sub_result["torrent"] = best_torrent
-                send_notify(code_sub_result["sub_result"], code_sub_result["caption"], pic)
+                send_notify(f'{code_sub_result["sub_result"]}\n', code_sub_result["caption"], pic)
                 return code_sub_result
         else:
             _LOGGER.error(f'「{code}」没有找到合适的种子')

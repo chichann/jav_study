@@ -40,6 +40,13 @@
       "defaultValue": ""
     },
     {
+      "fieldName": "smms_token",
+      "fieldType": "String",
+      "label": "smms网站的token",
+      "helperText": "smms网站的token，用于上传图片，详情见https://sm.ms/home/apitoken",
+      "defaultValue": ""
+    },
+    {
       "fieldName": "client_name",
       "fieldType": "String",
       "label": "配置的下载器名称",

@@ -15,6 +15,7 @@ class event_var:
         self.channel = None
         self.proxies = None
         self.headers = None
+        self.smms_token = ''
         self.client_name = ''
         self.down_path = ''
         self.appid = ''
@@ -42,6 +43,7 @@ def after_setup(plugin_meta: PluginMeta, config: Dict[str, Any]):
     event_var.headers = {
         'User-Agent': user_agent
     }
+    event_var.smms_token = config.get('smms_token')
     event_var.client_name = config.get('client_name')
     event_var.down_path = config.get('down_path')
     event_var.translate_enable = config.get('translate_enable')
@@ -68,6 +70,8 @@ def config_changed(config: Dict[str, Any]):
     event_var.headers = {
         'User-Agent': user_agent
     }
+
+    event_var.smms_token = config.get('smms_token')
     event_var.client_name = config.get('client_name')
     event_var.down_path = config.get('down_path')
     event_var.translate_enable = config.get('translate_enable')

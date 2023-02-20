@@ -93,7 +93,7 @@ def jav_sub_research_command(ctx: PluginCommandContext,
         logging.error(f'JAV订阅未下载重新搜索失败，错误信息：{e}', exc_info=True)
 
 
-@plugin.command(name='jav_sub_code_delete', title='JAV番号订阅删除', desc='选择番号删除订阅', icon='AutoAwesome',
+@plugin.command(name='jav_sub_code_delete', title='删除JAV番号订阅', desc='选择番号删除订阅', icon='AutoAwesome',
                 run_in_background=True)
 def jav_sub_code_delete(ctx: PluginCommandContext,
                         code: ArgSchema(ArgType.Enum, '番号', '选择番号删除订阅，仅支持单次删除一个。',
@@ -109,7 +109,7 @@ def jav_sub_code_delete(ctx: PluginCommandContext,
         return PluginCommandResponse(False, f'JAV订阅删除失败，错误信息：{e}')
 
 
-@plugin.command(name='jav_sub_star_delete', title='JAV老师订阅删除', desc='选择番号删除订阅', icon='AutoAwesome',
+@plugin.command(name='jav_sub_star_delete', title='删除JAV老师订阅', desc='选择老师删除订阅', icon='AutoAwesome',
                 run_in_background=True)
 def jav_sub_star_delete(ctx: PluginCommandContext,
                         star: ArgSchema(ArgType.Enum, '老师', '选择老师删除订阅，仅支持单次删除一个。',

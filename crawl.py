@@ -126,11 +126,9 @@ class javbus_crawl:
     def __init__(self):
         self.headers = event_var.headers
         self.proxies = event_var.proxies
-        # self.appid = event_var.appid
-        # self.sercet = event_var.sercet
-        # self.translate_enable = event_var.translate_enable
+        self.smms_token = event_var.smms_token
 
-    def crawl_start_code(self, star):
+    def crawl_star_code(self, star):
         try:
             url = 'https://www.javbus.com/searchstar/' + star
             r = requests.get(url, headers=self.headers, proxies=self.proxies, timeout=30)
@@ -144,10 +142,11 @@ class javbus_crawl:
             star_id = url.split('/')[-1]
             star_name = stars[0].select('div.photo-frame > img')[0].get('title')
             star_avatar = 'https://www.javbus.com' + stars[0].select('div.photo-frame > img')[0].get('src')
-            star_avatar = self.save_avatar_and_upload(star_name, star_avatar)
+            star_avatar, avatar_del_url = self.save_avatar_and_upload(star_name, star_avatar)
             star_detail = self.crawl_actor_detail(star_id)
             star_info = {
-                'star_id': star_id, 'star_name': star_name, 'star_avatar': star_avatar, 'star_detail': star_detail}
+                "star_id": star_id, "star_name": star_name, "star_avatar": star_avatar,
+                "del_avatar_img": avatar_del_url, "star_detail": star_detail}
             return star_info
         except Exception as e:
             logging.error(f'javbus搜索演员失败，原因为{e}', exc_info=True)
@@ -163,12 +162,15 @@ class javbus_crawl:
             if r.status_code == 200:
                 with open(f'{avatar_img_path}/{star_name}.jpg', 'wb') as f:
                     f.write(r.content)
+                f.close()
             r = requests.post('https://sm.ms/api/v2/upload',
-                              headers={'Authorization': 'APUGQJKYLuNWjZv86O2Shg3CHDrRpBlV'},
+                              headers={'Authorization': self.smms_token},
                               files={'smfile': open(f'{avatar_img_path}/{star_name}.jpg', 'rb')},
                               proxies=self.proxies, timeout=30)
             if r.status_code == 200:
-                return r.json()['data']['url']
+                img_url = r.json()['data']['url']
+                del_url = r.json()['data']['delete']
+                return img_url, del_url
             else:
                 return None
         except Exception as e:
@@ -202,7 +204,7 @@ class javbus_crawl:
                 movie_name = movie.select('div.photo-info > span')[0].contents[0]
                 movie_date = movie.select('div.photo-info > span > date')[1].text
                 movie_list.append(
-                    {'movie_code': movie_code, 'movie_name': movie_name, 'release_date': movie_date, 'status': 0})
+                    {"movie_code": movie_code, "movie_name": movie_name, "release_date": movie_date, "status": 0})
             return movie_list
         except Exception as e:
             logging.error(f'javbus获取演员影片列表失败，原因为{e}', exc_info=True)
