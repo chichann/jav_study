@@ -4,7 +4,6 @@ from mbot.openapi import mbot_api
 from mbot.common.flaskutils import api_result
 
 from flask import Blueprint, request
-from typing import Dict, Any
 import logging
 
 from .crawl import jav_crawl

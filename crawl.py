@@ -1,14 +1,9 @@
-from mbot.core.plugins import plugin
-from mbot.core.plugins import PluginContext, PluginMeta
-from mbot.openapi import mbot_api
-
 import requests
 from bs4 import BeautifulSoup, SoupStrainer
 import logging
 
 from .event import event_var
 from .common import str_cookies_to_dict
-from .translate import trans_main
 from .torrent import get_weight, get_mteam_conf
 
 _LOGGER = logging.getLogger(__name__)

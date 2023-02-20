@@ -1,9 +1,7 @@
 from mbot.core.plugins import plugin
 from mbot.core.plugins import PluginContext, PluginMeta
-from mbot.openapi import mbot_api
 from typing import Dict, Any
 import logging
-import time
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -50,7 +48,7 @@ def after_setup(plugin_meta: PluginMeta, config: Dict[str, Any]):
     if event_var.translate_enable:
         event_var.appid = config.get('appid')
         event_var.sercet = config.get('sercet')
-        _LOGGER.info('JAV翻译功能已开启')
+        _LOGGER.info('学习资料翻译功能已开启')
 
 
 @plugin.config_changed
@@ -78,6 +76,6 @@ def config_changed(config: Dict[str, Any]):
     if event_var.translate_enable:
         event_var.appid = config.get('appid')
         event_var.sercet = config.get('sercet')
-        _LOGGER.info('JAV翻译功能已开启')
+        _LOGGER.info('学习资料翻译功能已开启')
 
 

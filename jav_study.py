@@ -1,14 +1,8 @@
-import json
-
 from mbot.core.plugins import plugin
 from mbot.core.plugins import PluginContext, PluginMeta
 from mbot.openapi import mbot_api
-from mbot.common.flaskutils import api_result
 
-from flask import Blueprint, request
-from typing import Dict, Any
 import requests
-from bs4 import BeautifulSoup, SoupStrainer
 import logging
 import os.path
 import time
@@ -26,17 +20,17 @@ if not os.path.exists(torrent_folder):
     os.makedirs(torrent_folder)
 
 
-@plugin.task('jav_list_task', '定时爬取JAV影片榜单', cron_expression='34 */6 * * *')
+@plugin.task('jav_list_task', '定时爬取最受欢迎影片榜单', cron_expression='34 */6 * * *')
 def jav_list_task():
     run_and_download_list()
 
 
-@plugin.task('un_download_code_research_task', 'JAV番号订阅重新搜索', cron_expression='16 7,17 * * *')
+@plugin.task('un_download_code_research_task', '番号订阅重新搜索', cron_expression='16 7,17 * * *')
 def un_download_code_research_task():
     un_download_research()
 
 
-@plugin.task('research_star_sub', 'JAV演员订阅重新搜索', cron_expression='15 8,18 * * *')
+@plugin.task('research_star_sub', '老师订阅重新搜索', cron_expression='15 8,18 * * *')
 def research_star_sub_task():
     search_code_by_star_record()
     run_sub_star_record()
@@ -140,32 +134,32 @@ def run_and_download_list():
         if result:
             code_list = search_list_judge_recorded(result)
             if len(code_list) > 0:
-                _LOGGER.info(f'JAV最受欢迎影片本次新增{"、".join(code_list)},共{len(code_list)}部')
+                _LOGGER.info(f'最受欢迎影片本次新增{"、".join(code_list)},共{len(code_list)}部')
             if code_list:
                 for code in code_list:
                     _LOGGER.info(f'番号「{code}」提交搜索')
                     code_sub_result = torrent_main(code)
                     if code_sub_result["flag"] == 0:
-                        _LOGGER.error(f'JAV最受欢迎影片{code_sub_result["sub_result"]}')
+                        _LOGGER.error(f'最受欢迎影片{code_sub_result["sub_result"]}')
                         add_un_download_list(code)
                         time.sleep(30)
                         continue
                     elif code_sub_result["flag"] == 1:
-                        _LOGGER.info(f'JAV最受欢迎影片{code_sub_result["sub_result"]}')
+                        _LOGGER.info(f'最受欢迎影片{code_sub_result["sub_result"]}')
                         time.sleep(30)
                         continue
                     else:
-                        _LOGGER.error(f'JAV最受欢迎影片{code_sub_result["sub_result"]}')
+                        _LOGGER.error(f'最受欢迎影片{code_sub_result["sub_result"]}')
                         time.sleep(30)
                         continue
-                _LOGGER.info('JAV最受欢迎影片本次新增影片搜索完成')
+                _LOGGER.info('最受欢迎影片本次新增影片搜索完成')
             else:
-                _LOGGER.error('JAV最受欢迎影片无更新新片')
+                _LOGGER.error('最受欢迎影片无更新新片')
                 return True
         else:
             return False
     except Exception as e:
-        logging.error(f'JAV最受欢迎影片获取失败，错误信息：{e}', exc_info=True)
+        logging.error(f'最受欢迎影片获取失败，错误信息：{e}', exc_info=True)
         return False
 
 

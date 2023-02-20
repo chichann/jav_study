@@ -1,6 +1,3 @@
-import os
-from mbot.core.plugins import plugin
-from mbot.core.plugins import PluginContext, PluginMeta
 from mbot.openapi import mbot_api
 import requests
 import logging

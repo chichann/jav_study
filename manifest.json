@@ -1,9 +1,9 @@
 {
   "name": "jav_study",
-  "title": "JAV_学习资料",
+  "title": "学习资料",
   "author": "NaNaKo_",
-  "description": "JAV_学习资料查询及下载",
-  "version": "0.3",
+  "description": "学习资料查询及下载",
+  "version": "1.0",
   "requirements": [],
   "dependencies": {
     "appVersion": ">=1.9.23"
@@ -29,21 +29,21 @@
       "fieldName": "proxy",
       "fieldType": "String",
       "label": "代理地址",
-      "helperText": "JAV网站访问需代理地址，形如http://10.0.0.10:7890",
+      "helperText": "网站访问需代理地址，形如http://10.0.0.10:7890",
       "defaultValue": ""
     },
     {
       "fieldName": "user_agent",
       "fieldType": "String",
       "label": "访问网站的user-agent",
-      "helperText": "访问JAV网站的user-agent",
+      "helperText": "访问网站的user-agent",
       "defaultValue": ""
     },
     {
       "fieldName": "smms_token",
       "fieldType": "String",
       "label": "smms网站的token",
-      "helperText": "smms网站的token，用于上传图片，详情见https://sm.ms/home/apitoken",
+      "helperText": "smms网站的token，用于上传老师头像。详情见https://sm.ms/home/apitoken",
       "defaultValue": ""
     },
     {

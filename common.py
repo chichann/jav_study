@@ -1,7 +1,6 @@
 from mbot.core.plugins import plugin
 from mbot.core.plugins import PluginContext, PluginMeta
 from mbot.openapi import mbot_api
-from typing import Dict, Any
 import logging
 
 _LOGGER = logging.getLogger(__name__)
@@ -47,7 +46,7 @@ def set_cache(sign, value):
         server.common.set_cache('jav_search', sign, value)
         return True
     except Exception as e:
-        logging.error(f'jav_study写入缓存失败，错误信息：{e}')
+        logging.error(f'学习资料写入缓存失败，错误信息：{e}')
         return False
 
 
