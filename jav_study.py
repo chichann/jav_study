@@ -22,7 +22,8 @@ if not os.path.exists(torrent_folder):
 
 @plugin.task('jav_list_task', '定时爬取最受欢迎影片榜单', cron_expression='34 */6 * * *')
 def jav_list_task():
-    run_and_download_list()
+    if event_var.jav_list_enable:
+        run_and_download_list()
 
 
 @plugin.task('un_download_code_research_task', '番号订阅重新搜索', cron_expression='16 7,17 * * *')

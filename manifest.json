@@ -48,10 +48,11 @@
     },
     {
       "fieldName": "client_name",
-      "fieldType": "String",
+      "fieldType": "Enum",
       "label": "配置的下载器名称",
       "helperText": "配置的下载器名称",
-      "defaultValue": "qb"
+      "enumValuesRef": "DownloadClientList",
+      "multiValue": false
     },
     {
       "fieldName": "down_path",
@@ -59,6 +60,13 @@
       "label": "下载到qb的路径",
       "helperText": "下载到qb的路径",
       "defaultValue": ""
+    },
+    {
+      "fieldName": "jav_list_enable",
+      "fieldType": "Bool",
+      "label": "是否自动下载榜单TOP20",
+      "helperText": "是否自动下载榜单TOP20，勾选即自动下载并监控榜单更新。",
+      "defaultValue": false
     },
     {
       "fieldName": "translate_enable",

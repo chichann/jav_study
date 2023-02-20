@@ -16,9 +16,10 @@ class event_var:
         self.smms_token = ''
         self.client_name = ''
         self.down_path = ''
+        self.jav_list_enable = False
+        self.translate_enable = False
         self.appid = ''
         self.sercet = ''
-        self.translate_enable = False
 
 
 event_var = event_var()
@@ -46,6 +47,9 @@ def after_setup(plugin_meta: PluginMeta, config: Dict[str, Any]):
         _LOGGER.error('请设置smms_token。若不设置，演员订阅推送没有头像')
     event_var.client_name = config.get('client_name')
     event_var.down_path = config.get('down_path')
+    event_var.jav_list_enable = config.get('jav_list_enable')
+    if event_var.jav_list_enable:
+        _LOGGER.info('学习资料自动下载榜单功能已开启')
     event_var.translate_enable = config.get('translate_enable')
     if event_var.translate_enable:
         event_var.appid = config.get('appid')
@@ -76,6 +80,9 @@ def config_changed(config: Dict[str, Any]):
         _LOGGER.error('请设置smms_token。若不设置，演员订阅推送没有头像')
     event_var.client_name = config.get('client_name')
     event_var.down_path = config.get('down_path')
+    event_var.jav_list_enable = config.get('jav_list_enable')
+    if event_var.jav_list_enable:
+        _LOGGER.info('学习资料自动下载榜单功能已开启')
     event_var.translate_enable = config.get('translate_enable')
     if event_var.translate_enable:
         event_var.appid = config.get('appid')

@@ -9,7 +9,7 @@ from .common import set_true_code, add_un_download_list, judge_never_sub
 _LOGGER = logging.getLogger(__name__)
 
 
-@plugin.command(name='jav_list', title='最受欢迎影片', desc='点击获取最受欢迎影片', icon='AutoAwesome',
+@plugin.command(name='jav_list', title='最受欢迎影片', desc='获取最受欢迎影片,点击立即开始搜索资源并下载。', icon='AutoAwesome',
                 run_in_background=True)
 def jav_list_command(ctx: PluginCommandContext):
     try:

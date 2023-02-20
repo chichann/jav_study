@@ -31,7 +31,7 @@ def req_trans(query, appid, sercet):
         dst = res['trans_result'][0]['dst']
         return dst
     except Exception as e:
-        _LOGGER.error(f'翻译失败，错误详情：{e}')
+        logging.error(f'翻译失败，错误信息：{e}', exc_info=True)
         return None
 
 
