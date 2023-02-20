@@ -42,6 +42,8 @@ def after_setup(plugin_meta: PluginMeta, config: Dict[str, Any]):
         'User-Agent': user_agent
     }
     event_var.smms_token = config.get('smms_token')
+    if not event_var.smms_token:
+        _LOGGER.error('请设置smms_token。若不设置，演员订阅推送没有头像')
     event_var.client_name = config.get('client_name')
     event_var.down_path = config.get('down_path')
     event_var.translate_enable = config.get('translate_enable')
@@ -70,6 +72,8 @@ def config_changed(config: Dict[str, Any]):
     }
 
     event_var.smms_token = config.get('smms_token')
+    if not event_var.smms_token:
+        _LOGGER.error('请设置smms_token。若不设置，演员订阅推送没有头像')
     event_var.client_name = config.get('client_name')
     event_var.down_path = config.get('down_path')
     event_var.translate_enable = config.get('translate_enable')

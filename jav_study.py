@@ -112,8 +112,9 @@ def delete_star_sub(star_name):
     if sub_star:
         for item in sub_star:
             if item['star_name'] == star_name:
-                del_url = item['del_avatar_img']
-                del_avatar_img(del_url)
+                if event_var.smms_token:
+                    del_url = item['del_avatar_img']
+                    del_avatar_img(del_url)
                 sub_star.remove(item)
                 _LOGGER.info(f'删除订阅「{star_name}」成功')
                 set_cache(sign='actor_sub', value=sub_star)

@@ -2,7 +2,7 @@
   "name": "jav_study",
   "title": "学习资料",
   "author": "NaNaKo_",
-  "description": "学习资料查询及下载",
+  "description": "学习资料查询及下载。使用前务必查看README！",
   "version": "1.0",
   "requirements": [],
   "dependencies": {

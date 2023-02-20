@@ -136,8 +136,12 @@ class javbus_crawl:
             url = stars[0].get('href')
             star_id = url.split('/')[-1]
             star_name = stars[0].select('div.photo-frame > img')[0].get('title')
-            star_avatar = 'https://www.javbus.com' + stars[0].select('div.photo-frame > img')[0].get('src')
-            star_avatar, avatar_del_url = self.save_avatar_and_upload(star_name, star_avatar)
+            if event_var.smms_token:
+                star_avatar = 'https://www.javbus.com' + stars[0].select('div.photo-frame > img')[0].get('src')
+                star_avatar, avatar_del_url = self.save_avatar_and_upload(star_name, star_avatar)
+            else:
+                star_avatar = ''
+                avatar_del_url = ''
             star_detail = self.crawl_actor_detail(star_id)
             star_info = {
                 "star_id": star_id, "star_name": star_name, "star_avatar": star_avatar,
