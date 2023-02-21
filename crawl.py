@@ -1,12 +1,15 @@
+from moviebotapi.site import SearchType, SearchQuery, CateLevel1
+from mbot.openapi import mbot_api
 import requests
 from bs4 import BeautifulSoup, SoupStrainer
 import logging
 
 from .event import event_var
-from .common import str_cookies_to_dict
-from .torrent import get_weight, get_mteam_conf
+# from .common import str_cookies_to_dict
+from .torrent import get_weight
 
 _LOGGER = logging.getLogger(__name__)
+server = mbot_api
 
 
 class jav_crawl:
@@ -22,7 +25,7 @@ class jav_crawl:
         url = 'https://www.javlibrary.com/cn/vl_mostwanted.php?page=1'
         # result_list = []
         try:
-            _LOGGER.info(f'开始获取JAV最受欢迎影片')
+            _LOGGER.info(f'开始获取最受欢迎影片')
             r = requests.get(url=url, headers=self.headers, proxies=self.proxies, timeout=30)
             list_select = 'div.videos > div.video'
             soup_tmp = SoupStrainer('div', {'class': 'videos'})
@@ -34,7 +37,7 @@ class jav_crawl:
             else:
                 return False
         except Exception as e:
-            logging.error(f'获取JAV最受欢迎影片失败，原因为{e}', exc_info=True)
+            logging.error(f'获取最受欢迎影片失败，原因为{e}', exc_info=True)
             return False
 
     def jav_search(self, keyword):
@@ -43,7 +46,7 @@ class jav_crawl:
         url = f'https://www.javlibrary.com/cn/vl_searchbyid.php?keyword={code}'
         result_list = []
         try:
-            _LOGGER.info(f'开始在javlibrary查询「{code}」')
+            _LOGGER.info(f'开始在图书馆查询「{code}」')
             r = requests.get(url=url, headers=self.headers, proxies=self.proxies, timeout=30)
             list_select = 'div.videos > div.video'
             soup_tmp = SoupStrainer('div', {'class': 'videos'})
@@ -82,14 +85,14 @@ class jav_crawl:
                 result_list.append(video_info)
             return result_list
         except Exception as e:
-            logging.error(f'javlibrary搜索列表解析失败，原因为{e}', exc_info=True)
+            logging.error(f'图书馆搜索列表解析失败，原因为{e}', exc_info=True)
             return False
 
     def get_detail(self, soup):
         video_info = {}
         try:
             if '搜寻没有结果' in soup.text:
-                _LOGGER.error(f'javlibrary搜索列表解析失败，找不到任何结果')
+                _LOGGER.error(f'图书馆搜索列表解析失败，找不到任何结果')
                 return None
             else:
                 av_id = soup.select('div#video_title > h3 > a')[0].contents[0].split(' ', 1)[0]
@@ -113,7 +116,7 @@ class jav_crawl:
                 video_info['av_img'] = 'https:' + av_img
                 return video_info
         except Exception as e:
-            logging.error(f'javlibrary详情页解析失败，原因为{e}', exc_info=True)
+            logging.error(f'图书馆详情页解析失败，原因为{e}', exc_info=True)
             return None
 
 
@@ -148,7 +151,7 @@ class javbus_crawl:
                 "del_avatar_img": avatar_del_url, "star_detail": star_detail}
             return star_info
         except Exception as e:
-            logging.error(f'javbus搜索演员失败，原因为{e}', exc_info=True)
+            logging.error(f'公交车搜索演员失败，原因为{e}', exc_info=True)
             return None
 
     def save_avatar_and_upload(self, star_name, star_avatar):
@@ -173,7 +176,7 @@ class javbus_crawl:
             else:
                 return None
         except Exception as e:
-            logging.error(f'javbus保存头像并上传失败，原因为{e}', exc_info=True)
+            logging.error(f'公交车保存头像并上传失败，原因为{e}', exc_info=True)
             return None
 
     def crawl_actor_detail(self, star_id):
@@ -188,7 +191,7 @@ class javbus_crawl:
                     content.append(item.text)
             return content
         except Exception as e:
-            logging.error(f'javbus获取演员详情失败，原因为{e}', exc_info=True)
+            logging.error(f'公交车获取演员详情失败，原因为{e}', exc_info=True)
             return None
 
     def crawl_list_by_star(self, star_id):
@@ -206,57 +209,59 @@ class javbus_crawl:
                     {"movie_code": movie_code, "movie_name": movie_name, "release_date": movie_date, "status": 0})
             return movie_list
         except Exception as e:
-            logging.error(f'javbus获取演员影片列表失败，原因为{e}', exc_info=True)
+            logging.error(f'公交车获取演员影片列表失败，原因为{e}', exc_info=True)
             return None
 
 
-class mteam_crawl:
+class site_torrent_crawl:
 
     def __init__(self):
-        self.cookie, self.ua, self.proxy, self.domain = get_mteam_conf()
-        self.headers = {
-            'cookie': self.cookie,
-            'user-agent': self.ua,
-            'Referer': "https://kp.m-team.cc",
-        }
-        self.proxies = {
-            'http': self.proxy,
-            'https': self.proxy,
-        }
+        self.min_size = event_var.min_file_limit
+        self.max_size = event_var.max_file_limit
+        site_list = mbot_api.site.list()
+        h_sites = ['mteam', 'pttime', 'hdbd', 'nicept', 'exoticaz']
+        self.enable_site = [site.site_id for site in site_list if site.site_id in h_sites]
 
-    def search_mteam(self, keyword):
-        url = f'https://kp.m-team.cc/adult.php?incldead=1&spstate=0&inclbookmarked=0&search={keyword}&search_area=0&search_mode=0'
+    def search_by_remote(self, keyword):
+        try:
+            query = SearchQuery(SearchType.Keyword, keyword)
+            search_result = server.site.search_remote(query, [CateLevel1.AV], 15, self.enable_site)
+            return search_result
+        except Exception as e:
+            logging.error(f'搜索{keyword}失败，错误信息：{e}', exc_info=True)
+            return None
 
-        dict_cookie = str_cookies_to_dict(self.cookie)
-        response = requests.get(url, headers=self.headers, cookies=dict_cookie, proxies=self.proxies, timeout=30).text
-        if 'cloudflare' in response:
-            _LOGGER.error('可能遭遇CloudFlare五秒盾，一会再试试吧。')
-            return False
-        soup_tmp = SoupStrainer('table', {'class': 'torrents'})
-        soup = BeautifulSoup(response, 'html.parser', parse_only=soup_tmp)
-        trs = soup.select('table.torrents > tr:has(table.torrentname)')
-        torrents = []
-        for tr in trs:
-            title = tr.select('a[title][href^="details.php?id="]')[0].get('title')
-            download_url = tr.select('a[href^="download.php?id="]')[0].get('href')
-            size = tr.select('td.rowfollow:nth-last-child(6)')[0].text
-            seeders = tr.select('td.rowfollow:nth-last-child(5)')[0].text.replace(',', '')
-            leechers = tr.select('td.rowfollow:nth-last-child(4)')[0].text.replace(',', '')
-            grabs = tr.select('td.rowfollow:nth-last-child(3)')[0].text.replace(',', '')
-            describe_list = tr.select('table.torrentname > tr > td.embedded')[0].contents
-            describe = describe_list[len(describe_list) - 1].text
-            img = tr.select('img[alt="torrent thumbnail"]')[0].get('src')
-            torrent_rank = {
-                'title': title,
-                'download_url': download_url,
-                'size': size,
-                'seeders': seeders,
-                'leechers': leechers,
-                'grabs': grabs,
-                'describe': describe,
-                'img': img,
-            }
-            weight = get_weight(title, int(grabs), int(seeders), describe)
-            torrent_rank['weight'] = weight
-            torrents.append(torrent_rank)
-        return torrents
+    def search_by_keyword(self, keyword):
+        try:
+            search_result = self.search_by_remote(keyword)
+            torrents = []
+            if search_result:
+                for item in search_result:
+                    site_id = item.site_id
+                    name = item.name
+                    size_mb = item.size_mb
+                    size = size_mb + 'MB' if size_mb < 1024 else str(round(size_mb / 1024, 2)) + 'GB'
+                    poster_url = item.poster_url
+                    subject = item.subject
+                    download_url = item.download_url
+                    download_count = item.download_count
+                    upload_count = item.upload_count
+                    torrent_rank = {
+                        "site_id": site_id,
+                        "name": name,
+                        "subject": subject,
+                        "size": size,
+                        "poster_url": poster_url,
+                        "download_url": download_url,
+                        "download_count": download_count,
+                        "upload_count": upload_count,
+                    }
+                    weight = get_weight(torrent_rank, self.min_size, self.max_size)
+                    torrent_rank["weight"] = weight
+                    torrents.append(torrent_rank)
+                return torrents
+            else:
+                return None
+        except Exception as e:
+            logging.error(f'搜索种子出错，错误信息：{e}', exc_info=True)
+            return None

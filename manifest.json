@@ -3,7 +3,7 @@
   "title": "学习资料",
   "author": "NaNaKo_",
   "description": "学习资料查询及下载。使用前务必查看README！",
-  "version": "1.0",
+  "version": "1.1",
   "requirements": [],
   "dependencies": {
     "appVersion": ">=1.9.23"
@@ -29,7 +29,7 @@
       "fieldName": "proxy",
       "fieldType": "String",
       "label": "代理地址",
-      "helperText": "网站访问需代理地址，形如http://10.0.0.10:7890",
+      "helperText": "网站访问需代理地址，可支持http代理和sock5代理。",
       "defaultValue": ""
     },
     {
@@ -57,8 +57,15 @@
     {
       "fieldName": "down_path",
       "fieldType": "String",
-      "label": "下载到qb的路径",
-      "helperText": "下载到qb的路径",
+      "label": "下载到下载器的路径",
+      "helperText": "下载到下载器的路径",
+      "defaultValue": ""
+    },
+    {
+      "fieldName": "file_size_limit",
+      "fieldType": "String",
+      "label": "种子大小限制",
+      "helperText": "限制下载的种子文件大小，填写两个数值，用英文逗号隔开，单位GB。如1,20表示1GB到20GB之间的种子文件。不填则不限制。",
       "defaultValue": ""
     },
     {

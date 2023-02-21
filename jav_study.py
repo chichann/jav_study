@@ -6,12 +6,13 @@ import requests
 import logging
 import os.path
 import time
+import random
 
 from .event import event_var
 from .download_client import download
 from .torrent import get_best_torrent, best_torrent_echo, download_torrent
 from .common import get_cache, set_cache, add_un_download_list, add_download_list, send_notify
-from .crawl import jav_crawl, mteam_crawl, javbus_crawl
+from .crawl import jav_crawl, site_torrent_crawl, javbus_crawl
 
 server = mbot_api
 _LOGGER = logging.getLogger(__name__)
@@ -50,7 +51,8 @@ def un_download_research():
             _LOGGER.info(f'「{code}」重新搜索未找到资源，等待下次重试。')
         elif code_sub_result["flag"] == 1:
             downloaded_code_now.append(code)
-        time.sleep(30)
+        _LOGGER.info(f'休息10-20秒继续下一个')
+        time.sleep(random.randint(10, 20))
     if downloaded_code_now:
         for item in downloaded_code_now:
             un_download_code.remove(item)
@@ -144,15 +146,18 @@ def run_and_download_list():
                     if code_sub_result["flag"] == 0:
                         _LOGGER.error(f'最受欢迎影片{code_sub_result["sub_result"]}')
                         add_un_download_list(code)
-                        time.sleep(30)
+                        _LOGGER.info(f'休息10-20秒继续下一个')
+                        time.sleep(random.randint(10, 20))
                         continue
                     elif code_sub_result["flag"] == 1:
                         _LOGGER.info(f'最受欢迎影片{code_sub_result["sub_result"]}')
-                        time.sleep(30)
+                        _LOGGER.info(f'休息10-20秒继续下一个')
+                        time.sleep(random.randint(10, 20))
                         continue
                     else:
                         _LOGGER.error(f'最受欢迎影片{code_sub_result["sub_result"]}')
-                        time.sleep(30)
+                        _LOGGER.info(f'休息10-20秒继续下一个')
+                        time.sleep(random.randint(10, 20))
                         continue
                 _LOGGER.info('最受欢迎影片本次新增影片搜索完成')
             else:
@@ -286,18 +291,21 @@ def run_sub_single_star_code(star_info):
                         _LOGGER.error(
                             f'「{movie["movie_code"]}」下载失败，错误信息：{code_sub_result["sub_result"]}')
                         add_un_download_list(movie['movie_code'])
-                        time.sleep(30)
+                        _LOGGER.info(f'休息10-20秒继续下一个')
+                        time.sleep(random.randint(10, 20))
                         continue
                     elif code_sub_result["flag"] == 1:
                         _LOGGER.info(f'「{movie["movie_code"]}」下载成功')
                         movie["status"] = 1
-                        time.sleep(30)
+                        _LOGGER.info(f'休息10-20秒继续下一个')
+                        time.sleep(random.randint(10, 20))
                         continue
                     else:
                         _LOGGER.error(
                             f'「{movie["movie_code"]}」下载失败，错误信息：{code_sub_result["sub_result"]}')
                         movie["status"] = 1
-                        time.sleep(30)
+                        _LOGGER.info(f'休息10-20秒继续下一个')
+                        time.sleep(random.randint(10, 20))
                         continue
         _LOGGER.info(f'{star_info["star_name"]}的影片搜索完成')
         set_cache(sign=star_info["star_name"], value=star_info)
@@ -313,12 +321,12 @@ def torrent_main(code):
         "caption": "",
         "torrent": "",
     }
-    torrents = mteam_crawl().search_mteam(keyword=code)
+    torrents = site_torrent_crawl().search_by_keyword(keyword=code)
     if torrents:
         best_torrent = get_best_torrent(torrents)
         if best_torrent:
-            _LOGGER.info(f'找到最佳种子：标题：{best_torrent["title"]}，下载地址：{best_torrent["download_url"]}')
-            torrent_path = download_torrent(code, best_torrent['download_url'], torrent_folder)
+            _LOGGER.info(f'找到最佳种子：标题：{best_torrent["name"]}，下载地址：{best_torrent["download_url"]}')
+            torrent_path = download_torrent(code, best_torrent, torrent_folder)
             if torrent_path:
                 _LOGGER.info(f'「{code}」种子下载成功')
             else:

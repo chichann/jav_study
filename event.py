@@ -16,6 +16,8 @@ class event_var:
         self.smms_token = ''
         self.client_name = ''
         self.down_path = ''
+        self.min_file_limit = None
+        self.max_file_limit = None
         self.jav_list_enable = False
         self.translate_enable = False
         self.appid = ''
@@ -49,6 +51,14 @@ def after_setup(plugin_meta: PluginMeta, config: Dict[str, Any]):
         _LOGGER.error('请设置smms_token。若不设置，演员订阅推送没有头像')
     event_var.client_name = config.get('client_name')
     event_var.down_path = config.get('down_path')
+    file_size_limit = config.get('file_size_limit')
+    if file_size_limit:
+        event_var.min_file_limit = file_size_limit.split(',')[0]
+        event_var.max_file_limit = file_size_limit.split(',')[1]
+        _LOGGER.info(f'文件大小限制：{event_var.min_file_limit}GB - {event_var.max_file_limit}GB')
+    else:
+        event_var.min_file_limit = 0
+        event_var.max_file_limit = 0
     event_var.jav_list_enable = config.get('jav_list_enable')
     if event_var.jav_list_enable:
         _LOGGER.info('学习资料自动下载榜单功能已开启')
@@ -84,6 +94,14 @@ def config_changed(config: Dict[str, Any]):
         _LOGGER.error('请设置smms_token。若不设置，演员订阅推送没有头像')
     event_var.client_name = config.get('client_name')
     event_var.down_path = config.get('down_path')
+    file_size_limit = config.get('file_size_limit')
+    if file_size_limit:
+        event_var.min_file_limit = file_size_limit.split(',')[0]
+        event_var.max_file_limit = file_size_limit.split(',')[1]
+        _LOGGER.info(f'文件大小限制：{event_var.min_file_limit}GB - {event_var.max_file_limit}GB')
+    else:
+        event_var.min_file_limit = 0
+        event_var.max_file_limit = 0
     event_var.jav_list_enable = config.get('jav_list_enable')
     if event_var.jav_list_enable:
         _LOGGER.info('学习资料自动下载榜单功能已开启')
