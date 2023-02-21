@@ -336,8 +336,9 @@ def torrent_main(code):
                 code_sub_result["flag"] = 1
                 code_sub_result["caption"] = caption
                 code_sub_result["torrent"] = best_torrent
+                code_sub_result["pic"] = pic
                 add_download_list(code)
-                send_notify(f'{code_sub_result["sub_result"]}\n', code_sub_result["caption"], pic)
+                send_notify(f'{code_sub_result["sub_result"]}\n', code_sub_result["caption"], code_sub_result["pic"])
                 return code_sub_result
             else:
                 _LOGGER.info(f'「{code}」提交下载失败，可能是下载器已存在该种子')
@@ -345,7 +346,8 @@ def torrent_main(code):
                 code_sub_result["flag"] = 2
                 code_sub_result["caption"] = caption
                 code_sub_result["torrent"] = best_torrent
-                send_notify(f'{code_sub_result["sub_result"]}\n', code_sub_result["caption"], pic)
+                code_sub_result["pic"] = pic
+                send_notify(f'{code_sub_result["sub_result"]}\n', code_sub_result["caption"], code_sub_result["pic"])
                 return code_sub_result
         else:
             _LOGGER.error(f'「{code}」没有找到合适的种子')

@@ -72,3 +72,24 @@ def sub():
                 return api_result(code=1, message='订阅失败', data=code_sub_result["sub_result"])
     else:
         return api_result(code=1, message='请输入番号', data='')
+
+
+@bp.route('/tg_sub', methods=["GET"])
+def tg_sub():
+    code = request.args.get('code') if request.args.get('code') else ''
+    if code:
+        code = set_true_code(code)
+        _LOGGER.info(f'番号「{code}」提交搜索')
+        if not judge_never_sub(code):
+            return api_result(code=1, message='订阅失败', data=f'「{code}」已经订阅过了')
+        else:
+            code_sub_result = torrent_main(code)
+            if code_sub_result["flag"] == 1:
+                return api_result(code=0, message='订阅并下载成功', data=code_sub_result)
+            elif code_sub_result["flag"] == 0:
+                add_un_download_list(code)
+                return api_result(code=0, message='订阅成功，但找不到资源', data=code_sub_result)
+            else:
+                return api_result(code=1, message='订阅失败', data=code_sub_result)
+    else:
+        return api_result(code=1, message='请输入番号', data='')

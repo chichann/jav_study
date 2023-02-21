@@ -34,9 +34,11 @@ def after_setup(plugin_meta: PluginMeta, config: Dict[str, Any]):
         event_var.proxies = {
             'http': proxy,
             'https': proxy,
+            'socks5': proxy,
         }
         _LOGGER.info(f'代理地址：{proxy}')
     else:
+        event_var.proxies = None
         _LOGGER.error('请确认你的网络环境能访问JAVLIBRARY，或者设置代理地址')
     user_agent = config.get('user_agent')
     event_var.headers = {
@@ -66,9 +68,11 @@ def config_changed(config: Dict[str, Any]):
         event_var.proxies = {
             'http': proxy,
             'https': proxy,
+            'socks5': proxy,
         }
         _LOGGER.info(f'代理地址：{proxy}')
     else:
+        event_var.proxies = None
         _LOGGER.error('请确认你的网络环境能访问JAVLIBRARY，或者设置代理地址')
     user_agent = config.get('user_agent')
     event_var.headers = {
