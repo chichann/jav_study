@@ -141,7 +141,13 @@ class javbus_crawl:
             star_name = stars[0].select('div.photo-frame > img')[0].get('title')
             if event_var.smms_token:
                 star_avatar = 'https://www.javbus.com' + stars[0].select('div.photo-frame > img')[0].get('src')
-                star_avatar, avatar_del_url = self.save_avatar_and_upload(star_name, star_avatar)
+                avatar = self.save_avatar_and_upload(star_name, star_avatar)
+                if avatar:
+                    star_avatar = avatar["img_url"]
+                    avatar_del_url = avatar["del_url"]
+                else:
+                    star_avatar = ''
+                    avatar_del_url = ''
             else:
                 star_avatar = ''
                 avatar_del_url = ''
@@ -172,7 +178,11 @@ class javbus_crawl:
             if r.status_code == 200:
                 img_url = r.json()['data']['url']
                 del_url = r.json()['data']['delete']
-                return img_url, del_url
+                avatar = {
+                    "img_url": img_url,
+                    "del_url": del_url
+                }
+                return avatar
             else:
                 return None
         except Exception as e:

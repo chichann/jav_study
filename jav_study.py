@@ -229,11 +229,14 @@ def sub_by_star(star, date):
 def update_monitor_date(star, date):
     actor_sub = get_cache(sign='actor_sub')
     if actor_sub:
-        for star_info in actor_sub:
-            if star_info["star_name"] == star:
+        for sub_item in actor_sub:
+            if sub_item["star_name"] == star:
+                sub_item["monitor_date"] = date
+                star_info = get_cache(sign=sub_item["star_name"])
                 star_info["monitor_date"] = date
                 set_cache(sign='actor_sub', value=actor_sub)
-                return {'flag': True, 'star_info': star_info}
+                set_cache(sign=sub_item["star_name"], value=star_info)
+                return {'flag': True, 'star_info': sub_item}
     return {'flag': False}
 
 
@@ -254,7 +257,6 @@ def search_code_by_single_star(star_info):
             star_info["movie_list"] = movie_list
         else:
             for movie in movie_list:
-                # 判断movie_list中每一项是否在item['movie_list']中已存在，如果存在则跳过，不存在则添加
                 if movie["movie_code"] not in [x["movie_code"] for x in star_info["movie_list"]]:
                     star_info["movie_list"].append(movie)
     for movie in star_info["movie_list"]:
@@ -283,6 +285,9 @@ def run_sub_single_star_code(star_info):
         for movie in star_info["movie_list"]:
             # 判断movie['status'] == 0，以及movie['release_date']是否大于monitor_date,如果是则提交下载
             if movie["status"] == 0:
+                if judge_never_sub(movie["movie_code"]):
+                    movie["status"] = 1
+                    continue
                 if movie["release_date"] >= star_info["monitor_date"]:
                     _LOGGER.info(f'开始搜索「{star_info["star_name"]}」的影片「{movie["movie_code"]}」')
                     code_sub_result = torrent_main(movie["movie_code"])
