@@ -11,17 +11,19 @@ import random
 from .event import event_var
 from .download_client import download
 from .torrent import get_best_torrent, best_torrent_echo, download_torrent
-from .common import get_cache, set_cache, add_un_download_list, add_download_list, send_notify
+from .common import get_cache, set_cache, add_un_download_list, add_download_list, send_notify, judge_never_sub
 from .crawl import jav_crawl, site_torrent_crawl, javbus_crawl
+from .embyapi import EmbyApi
 
 server = mbot_api
+emby = EmbyApi()
 _LOGGER = logging.getLogger(__name__)
 torrent_folder = '/data/plugins/jav_study/torrents'
 if not os.path.exists(torrent_folder):
     os.makedirs(torrent_folder)
 
 
-@plugin.task('jav_list_task', '定时爬取最受欢迎影片榜单', cron_expression='34 */6 * * *')
+@plugin.task('jav_list_task', '定时爬取榜单TOP20', cron_expression='34 */6 * * *')
 def jav_list_task():
     if event_var.jav_list_enable:
         run_and_download_list()
@@ -36,6 +38,12 @@ def un_download_code_research_task():
 def research_star_sub_task():
     search_code_by_star_record()
     run_sub_star_record()
+
+
+@plugin.task('sync_emby_lib', '同步emby库存信息', cron_expression='0 */6 * * *')
+def sync_emby_lib_task():
+    if emby.is_emby:
+        sync_emby_lib()
 
 
 def un_download_research():
@@ -59,20 +67,22 @@ def un_download_research():
         set_cache(sign='un_download_code', value=un_download_code)
 
 
+def sync_emby_lib():
+    un_download_code = get_cache(sign='un_download_code') or []
+    in_lib_list = [item for item in un_download_code if emby.check_emby_item(item)]
+    if in_lib_list:
+        for item in in_lib_list:
+            _LOGGER.info(f'「{item}」已经在emby库中，删除未下载列表中的记录')
+            un_download_code.remove(item)
+        set_cache(sign='un_download_code', value=un_download_code)
+
+
 def search_list_judge_recorded(code_list_before):
-    code_list, exist_list = [], []
-    for item in code_list_before:
-        code_list.append(item['av_id'])
-    downloaded_code = get_cache(sign='downloaded_code')
-    un_download_code = get_cache(sign='un_download_code')
-    if downloaded_code is not None:
-        exist_list.extend(downloaded_code)
-    if un_download_code is not None:
-        exist_list.extend(un_download_code)
-    if exist_list is not None:
-        return [code for code in code_list if code not in exist_list]
-    else:
-        return code_list
+    code_list = [item['av_id'] for item in code_list_before]
+    downloaded_code = get_cache(sign='downloaded_code') or []
+    un_download_code = get_cache(sign='un_download_code') or []
+    exist_list = downloaded_code + un_download_code
+    return [code for code in code_list if code not in exist_list]
 
 
 def get_sub_code_list():
@@ -85,16 +95,16 @@ def get_sub_code_list():
 
 def delete_code_sub(code):
     _LOGGER.info(f'开始删除订阅「{code}」')
-    code = ''.join(code)
-    un_download_code = get_cache(sign='un_download_code')
-    if un_download_code:
-        if code in un_download_code:
-            un_download_code.remove(code)
-            _LOGGER.info(f'删除订阅「{code}」成功')
-            set_cache(sign='un_download_code', value=un_download_code)
-            return True
-        else:
-            return False
+    for code_item in code:
+        un_download_code = get_cache(sign='un_download_code')
+        if un_download_code:
+            if code_item in un_download_code:
+                un_download_code.remove(code_item)
+                _LOGGER.info(f'删除订阅「{code_item}」成功')
+                set_cache(sign='un_download_code', value=un_download_code)
+                return True
+            else:
+                return False
 
 
 def get_sub_star_list():
@@ -110,19 +120,19 @@ def get_sub_star_list():
 
 def delete_star_sub(star_name):
     _LOGGER.info(f'开始删除订阅「{star_name}」')
-    star_name = ''.join(star_name)
-    sub_star = get_cache(sign='actor_sub')
-    if sub_star:
-        for item in sub_star:
-            if item['star_name'] == star_name:
-                if event_var.smms_token:
-                    del_url = item['del_avatar_img']
-                    del_avatar_img(del_url)
-                sub_star.remove(item)
-                _LOGGER.info(f'删除订阅「{star_name}」成功')
-                set_cache(sign='actor_sub', value=sub_star)
-                set_cache(sign=star_name, value=[])
-                return True
+    for star_item in star_name:
+        sub_star = get_cache(sign='actor_sub')
+        if sub_star:
+            for item in sub_star:
+                if item['star_name'] == star_item:
+                    if event_var.smms_token:
+                        del_url = item['del_avatar_img']
+                        del_avatar_img(del_url)
+                    sub_star.remove(item)
+                    _LOGGER.info(f'删除订阅「{star_item}」成功')
+                    set_cache(sign='actor_sub', value=sub_star)
+                    set_cache(sign=star_item, value=[])
+                    return True
 
 
 def del_avatar_img(url):
@@ -138,35 +148,35 @@ def run_and_download_list():
         if result:
             code_list = search_list_judge_recorded(result)
             if len(code_list) > 0:
-                _LOGGER.info(f'最受欢迎影片本次新增{"、".join(code_list)},共{len(code_list)}部')
+                _LOGGER.info(f'榜单TOP20本次新增{"、".join(code_list)},共{len(code_list)}部')
             if code_list:
                 for code in code_list:
                     _LOGGER.info(f'番号「{code}」提交搜索')
                     code_sub_result = torrent_main(code)
                     if code_sub_result["flag"] == 0:
-                        _LOGGER.error(f'最受欢迎影片{code_sub_result["sub_result"]}')
+                        _LOGGER.error(f'榜单TOP20{code_sub_result["sub_result"]}')
                         add_un_download_list(code)
                         _LOGGER.info(f'休息10-20秒继续下一个')
                         time.sleep(random.randint(10, 20))
                         continue
                     elif code_sub_result["flag"] == 1:
-                        _LOGGER.info(f'最受欢迎影片{code_sub_result["sub_result"]}')
+                        _LOGGER.info(f'榜单TOP20{code_sub_result["sub_result"]}')
                         _LOGGER.info(f'休息10-20秒继续下一个')
                         time.sleep(random.randint(10, 20))
                         continue
                     else:
-                        _LOGGER.error(f'最受欢迎影片{code_sub_result["sub_result"]}')
+                        _LOGGER.error(f'榜单TOP20{code_sub_result["sub_result"]}')
                         _LOGGER.info(f'休息10-20秒继续下一个')
                         time.sleep(random.randint(10, 20))
                         continue
-                _LOGGER.info('最受欢迎影片本次新增影片搜索完成')
+                _LOGGER.info('榜单TOP20本次新增影片搜索完成')
             else:
-                _LOGGER.error('最受欢迎影片无更新新片')
+                _LOGGER.error('榜单TOP20无更新新片')
                 return True
         else:
             return False
     except Exception as e:
-        logging.error(f'最受欢迎影片获取失败，错误信息：{e}', exc_info=True)
+        logging.error(f'榜单TOP20获取失败，错误信息：{e}', exc_info=True)
         return False
 
 
@@ -227,17 +237,6 @@ def update_monitor_date(star, date):
     return {'flag': False}
 
 
-def single_codee_judge_record(code):
-    exist_list = []
-    downloaded_code = get_cache(sign='downloaded_code')
-    un_download_code = get_cache(sign='un_download_code')
-    if downloaded_code is not None:
-        exist_list.extend(downloaded_code)
-    if un_download_code is not None:
-        exist_list.extend(un_download_code)
-    return code if exist_list is None or code not in exist_list else None
-
-
 def search_code_by_star_record():
     actor_sub = get_cache(sign='actor_sub')
     if actor_sub:
@@ -260,8 +259,8 @@ def search_code_by_single_star(star_info):
                     star_info["movie_list"].append(movie)
     for movie in star_info["movie_list"]:
         if movie["status"] == 0:
-            judge = single_codee_judge_record(movie["movie_code"])
-            if not judge:
+            judge = judge_never_sub(movie["movie_code"])
+            if judge:
                 movie["status"] = 1
             continue
     set_cache(sign=star_info["star_name"], value=star_info)

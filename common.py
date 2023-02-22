@@ -112,6 +112,8 @@ def add_download_list(code):
 
 
 def judge_never_sub(code):
+    from .embyapi import EmbyApi
+    emby = EmbyApi()
     exist_list = []
     un_download_code = get_cache(sign='un_download_code')
     downloaded_code = get_cache(sign='downloaded_code')
@@ -120,9 +122,13 @@ def judge_never_sub(code):
     if downloaded_code:
         exist_list.extend(downloaded_code)
     if code in exist_list:
-        _LOGGER.error(f'「{code}」已经订阅过了。')
-        return False
-    return True
+        return True
+    if emby.is_emby:
+        emby_exist = emby.check_emby_item(code)
+        if emby_exist:
+            _LOGGER.info(f'「{code}」已存在于Emby库中，不会再重复下载。')
+        return emby_exist
+    return False
 
 
 def send_notify(title, content, pic):

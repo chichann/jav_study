@@ -3,21 +3,24 @@ from mbot.core.params import ArgSchema, ArgType
 import logging
 
 from .jav_study import torrent_main, run_and_download_list, un_download_research, get_sub_code_list, delete_code_sub, \
-    sub_by_star, run_sub_star_record, get_sub_star_list, delete_star_sub
+    sub_by_star, run_sub_star_record, get_sub_star_list, delete_star_sub, sync_emby_lib
 from .common import set_true_code, add_un_download_list, judge_never_sub
+from .event import event_var
+from .embyapi import EmbyApi
+emby = EmbyApi()
 
 _LOGGER = logging.getLogger(__name__)
 
 
-@plugin.command(name='jav_list', title='最受欢迎影片', desc='获取最受欢迎影片,点击立即开始搜索资源并下载。', icon='AutoAwesome',
-                run_in_background=True)
-def jav_list_command(ctx: PluginCommandContext):
-    try:
-        run_and_download_list()
-        return PluginCommandResponse(True, f'最受欢迎影片获取成功')
-    except Exception as e:
-        logging.error(f'最受欢迎影片获取失败，错误信息：{e}', exc_info=True)
-        return PluginCommandResponse(False, f'最受欢迎影片获取失败，错误信息：{e}')
+# @plugin.command(name='jav_list', title='最受欢迎影片', desc='获取最受欢迎影片,点击立即开始搜索资源并下载。', icon='AutoAwesome',
+#                 run_in_background=True)
+# def jav_list_command(ctx: PluginCommandContext):
+#     try:
+#         run_and_download_list()
+#         return PluginCommandResponse(True, f'最受欢迎影片获取成功')
+#     except Exception as e:
+#         logging.error(f'最受欢迎影片获取失败，错误信息：{e}', exc_info=True)
+#         return PluginCommandResponse(False, f'最受欢迎影片获取失败，错误信息：{e}')
 
 
 @plugin.command(name='jav_sub_code', title='订阅番号', desc='输入番号自动搜索提交下载', icon='AutoAwesome',
@@ -29,7 +32,7 @@ def jav_sub_code_command(
     try:
         code = set_true_code(code)
         _LOGGER.info(f'番号「{code}」提交搜索')
-        if not judge_never_sub(code):
+        if judge_never_sub(code):
             return PluginCommandResponse(True, f'番号「{code}」已经订阅过了')
         code_sub_result = torrent_main(code)
         if code_sub_result["flag"] == 1:
@@ -49,7 +52,7 @@ def jav_sub_code_command(
 def jav_sub_star_command(
         ctx: PluginCommandContext,
         star: ArgSchema(ArgType.String, '老师名字', '输入老师名字'),
-        date: ArgSchema(ArgType.String, '日期', '输入日期，格式为：2021-01-01')
+        date: ArgSchema(ArgType.String, '日期', '输入日期，监控该日期以后发行的片，格式为：2021-01-01')
 ):
     try:
         _LOGGER.info(f'老师「{star}」提交订阅')
@@ -64,17 +67,25 @@ def jav_sub_star_command(
 
 task_list = [
     {
+        "name": "榜单TOP20同步",
+        "value": "jav_list"
+    },
+    {
         "name": "番号订阅",
         "value": "sub_code"
     },
     {
         "name": "老师订阅",
         "value": "sub_star"
+    },
+    {
+        "name": "订阅记录同步emby库存",
+        "value": "sub_sync"
     }
 ]
 
 
-@plugin.command(name='jav_sub_research_command', title='学习资料订阅重新搜索', desc='点击执行番号或老师订阅重新搜索',
+@plugin.command(name='jav_sub_research_command', title='学习资料手动执行任务', desc='点击手动选择执行学习资料任务',
                 icon='AutoAwesome', run_in_background=True)
 def jav_sub_research_command(ctx: PluginCommandContext,
                              task: ArgSchema(ArgType.Enum, '任务', '选择任务', enum_values=lambda: task_list,
@@ -88,6 +99,22 @@ def jav_sub_research_command(ctx: PluginCommandContext,
             _LOGGER.info(f'老师订阅重新搜索')
             run_sub_star_record()
             return PluginCommandResponse(True, f'订阅中重新搜索完成')
+        elif task == "jav_list":
+            if event_var.jav_list_enable:
+                _LOGGER.info(f'榜单TOP20开始同步')
+                run_and_download_list()
+                return PluginCommandResponse(True, f'榜单TOP20同步完成')
+            else:
+                _LOGGER.error(f'未开启自动下载榜单TOP20,请先在配置中打开开关。')
+                return PluginCommandResponse(False, f'最受欢迎影片重新搜索失败，错误信息：未开启最受欢迎影片')
+        elif task == "sub_sync":
+            if emby.is_emby:
+                _LOGGER.info(f'订阅记录同步emby库存')
+                sync_emby_lib()
+                return PluginCommandResponse(True, f'订阅记录同步emby库存完成')
+            else:
+                _LOGGER.error(f'订阅记录同步emby库存失败，错误信息：未配置emby')
+                return PluginCommandResponse(False, f'订阅记录同步emby库存失败，错误信息：未配置emby')
     except Exception as e:
         logging.error(f'订阅未下载重新搜索失败，错误信息：{e}', exc_info=True)
 
@@ -95,8 +122,8 @@ def jav_sub_research_command(ctx: PluginCommandContext,
 @plugin.command(name='jav_sub_code_delete', title='删除番号订阅', desc='选择番号删除订阅', icon='AutoAwesome',
                 run_in_background=True)
 def jav_sub_code_delete(ctx: PluginCommandContext,
-                        code: ArgSchema(ArgType.Enum, '番号', '选择番号删除订阅，仅支持单次删除一个。',
-                                        enum_values=get_sub_code_list, multi_value=False)
+                        code: ArgSchema(ArgType.Enum, '番号', '选择番号删除订阅',
+                                        enum_values=get_sub_code_list)
                         ):
     try:
         if delete_code_sub(code):
@@ -111,8 +138,8 @@ def jav_sub_code_delete(ctx: PluginCommandContext,
 @plugin.command(name='jav_sub_star_delete', title='删除老师订阅', desc='选择老师删除订阅', icon='AutoAwesome',
                 run_in_background=True)
 def jav_sub_star_delete(ctx: PluginCommandContext,
-                        star: ArgSchema(ArgType.Enum, '老师', '选择老师删除订阅，仅支持单次删除一个。',
-                                        enum_values=get_sub_star_list, multi_value=False)
+                        star: ArgSchema(ArgType.Enum, '老师', '选择老师删除订阅。',
+                                        enum_values=get_sub_star_list)
                         ):
     try:
         if delete_star_sub(star):

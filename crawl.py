@@ -240,7 +240,7 @@ class site_torrent_crawl:
                     site_id = item.site_id
                     name = item.name
                     size_mb = item.size_mb
-                    size = size_mb + 'MB' if size_mb < 1024 else str(round(size_mb / 1024, 2)) + 'GB'
+                    size = str(size_mb) + 'MB' if size_mb < 1024 else str(round(size_mb / 1024, 2)) + 'GB'
                     poster_url = item.poster_url
                     subject = item.subject
                     download_url = item.download_url
