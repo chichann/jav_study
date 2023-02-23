@@ -28,8 +28,12 @@ def req_trans(query, appid, sercet):
         sign = md5(str_after)
         url = f'http://api.fanyi.baidu.com/api/trans/vip/translate?q={q}&from=auto&to=zh&appid={appid}&salt={salt}&sign={sign}'
         res = requests.get(url).json()
-        dst = res['trans_result'][0]['dst']
-        return dst
+        if 'trans_result' in res:
+            dst = res['trans_result'][0]['dst']
+            return dst
+        elif 'error_code' in res:
+            msg = {"error_code": res["error_code"], "error_msg": res["error_msg"], "错误详情查询": "http://api.fanyi.baidu.com/doc/21"}
+            _LOGGER.error(f'翻译失败，错误信息：{msg}')
     except Exception as e:
         logging.error(f'翻译失败，错误信息：{e}', exc_info=True)
         return None

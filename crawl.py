@@ -174,8 +174,8 @@ class javbus_crawl:
             r = requests.post('https://sm.ms/api/v2/upload',
                               headers={'Authorization': self.smms_token},
                               files={'smfile': open(f'{avatar_img_path}/{star_name}.jpg', 'rb')},
-                              proxies=self.proxies, timeout=30)
-            if r.status_code == 200:
+                              proxies=self.proxies, timeout=30).json()
+            if r["success"]:
                 img_url = r.json()['data']['url']
                 del_url = r.json()['data']['delete']
                 avatar = {
@@ -184,6 +184,7 @@ class javbus_crawl:
                 }
                 return avatar
             else:
+                _LOGGER.error(f'老师头像上传失败，错误信息{r["message"]}')
                 return None
         except Exception as e:
             logging.error(f'公交车保存头像并上传失败，原因为{e}', exc_info=True)
