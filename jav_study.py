@@ -79,10 +79,9 @@ def sync_emby_lib():
 
 def search_list_judge_recorded(code_list_before):
     code_list = [item['av_id'] for item in code_list_before]
-    downloaded_code = get_cache(sign='downloaded_code') or []
-    un_download_code = get_cache(sign='un_download_code') or []
-    exist_list = downloaded_code + un_download_code
-    return [code for code in code_list if code not in exist_list]
+    exist_list = (get_cache(sign='downloaded_code') or []) + (get_cache(sign='un_download_code') or [])
+    code_list_after = [item for item in code_list if item not in exist_list and not emby.check_emby_item(item)]
+    return code_list_after
 
 
 def get_sub_code_list():

@@ -111,6 +111,7 @@ def jav_sub_research_command(ctx: PluginCommandContext,
             if emby.is_emby:
                 _LOGGER.info(f'订阅记录同步emby库存')
                 sync_emby_lib()
+                _LOGGER.info(f'订阅记录同步emby库存完成')
                 return PluginCommandResponse(True, f'订阅记录同步emby库存完成')
             else:
                 _LOGGER.error(f'订阅记录同步emby库存失败，错误信息：未配置emby')
