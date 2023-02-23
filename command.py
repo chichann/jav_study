@@ -12,17 +12,6 @@ emby = EmbyApi()
 _LOGGER = logging.getLogger(__name__)
 
 
-# @plugin.command(name='jav_list', title='最受欢迎影片', desc='获取最受欢迎影片,点击立即开始搜索资源并下载。', icon='AutoAwesome',
-#                 run_in_background=True)
-# def jav_list_command(ctx: PluginCommandContext):
-#     try:
-#         run_and_download_list()
-#         return PluginCommandResponse(True, f'最受欢迎影片获取成功')
-#     except Exception as e:
-#         logging.error(f'最受欢迎影片获取失败，错误信息：{e}', exc_info=True)
-#         return PluginCommandResponse(False, f'最受欢迎影片获取失败，错误信息：{e}')
-
-
 @plugin.command(name='jav_sub_code', title='订阅番号', desc='输入番号自动搜索提交下载', icon='AutoAwesome',
                 run_in_background=True)
 def jav_sub_code_command(
@@ -33,6 +22,7 @@ def jav_sub_code_command(
         code = set_true_code(code)
         _LOGGER.info(f'番号「{code}」提交搜索')
         if judge_never_sub(code):
+            _LOGGER.info(f'番号「{code}」已经订阅过了')
             return PluginCommandResponse(True, f'番号「{code}」已经订阅过了')
         code_sub_result = torrent_main(code)
         if code_sub_result["flag"] == 1:

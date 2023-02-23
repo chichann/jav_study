@@ -15,6 +15,7 @@ def get_weight(torrent_rank, min_size, max_size):
     upload_count = torrent_rank["upload_count"]
     download_count = torrent_rank["download_count"]
     content = name + subject
+    _LOGGER.info(f'[{torrent_rank["site_id"]}]: {content}|upload_count:{upload_count}|download_count:{download_count}')
     # 如果做种人数和下载完成人数都超过50，权重+100
     if upload_count > 50 and download_count > 50:
         weight += 100
@@ -23,7 +24,6 @@ def get_weight(torrent_rank, min_size, max_size):
         if keyword in content:
             weight += 1000
             break
-        weight = -1
     # 如果做种人数等于0，权重为-1
     if upload_count == 0:
         weight = -1
@@ -38,13 +38,14 @@ def get_weight(torrent_rank, min_size, max_size):
         size = float(size.split('GB')[0])
     if size < float(min_size) or size > float(max_size):
         weight = -1
+    _LOGGER.info(f'[{torrent_rank["site_id"]}]: {content}|最终权重为{weight}')
     return weight
 
 
 def get_best_torrent(torrents):
     if torrents:
         torrents.sort(key=lambda x: x['weight'], reverse=True)
-        if torrents[0]['weight'] < 0:
+        if torrents[0]['weight'] <= 0:
             return None
         return torrents[0]
     return None

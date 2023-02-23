@@ -94,16 +94,12 @@ def get_sub_code_list():
 
 def delete_code_sub(code):
     _LOGGER.info(f'开始删除订阅「{code}」')
+    un_download_code = get_cache(sign='un_download_code')
     for code_item in code:
-        un_download_code = get_cache(sign='un_download_code')
-        if un_download_code:
-            if code_item in un_download_code:
-                un_download_code.remove(code_item)
-                _LOGGER.info(f'删除订阅「{code_item}」成功')
-                set_cache(sign='un_download_code', value=un_download_code)
-                return True
-            else:
-                return False
+        un_download_code.remove(code_item)
+        _LOGGER.info(f'删除订阅「{code_item}」成功')
+    set_cache(sign='un_download_code', value=un_download_code)
+    return True
 
 
 def get_sub_star_list():
@@ -119,19 +115,22 @@ def get_sub_star_list():
 
 def delete_star_sub(star_name):
     _LOGGER.info(f'开始删除订阅「{star_name}」')
+    sub_star = get_cache(sign='actor_sub')
+    items_to_delete = []
     for star_item in star_name:
-        sub_star = get_cache(sign='actor_sub')
-        if sub_star:
-            for item in sub_star:
-                if item['star_name'] == star_item:
-                    if event_var.smms_token:
-                        del_url = item['del_avatar_img']
-                        del_avatar_img(del_url)
-                    sub_star.remove(item)
-                    _LOGGER.info(f'删除订阅「{star_item}」成功')
-                    set_cache(sign='actor_sub', value=sub_star)
-                    set_cache(sign=star_item, value=[])
-                    return True
+        for item in sub_star:
+            if item['star_name'] == star_item:
+                if event_var.smms_token:
+                    del_url = item['del_avatar_img']
+                    del_avatar_img(del_url)
+                items_to_delete.append(item)
+                set_cache(sign=star_item, value=[])
+                _LOGGER.info(f'删除订阅「{star_item}」成功')
+                break
+    for item in items_to_delete:
+        sub_star.remove(item)
+    set_cache(sign='actor_sub', value=sub_star)
+    return True
 
 
 def del_avatar_img(url):

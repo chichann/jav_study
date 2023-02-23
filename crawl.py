@@ -230,7 +230,7 @@ class site_torrent_crawl:
         self.min_size = event_var.min_file_limit
         self.max_size = event_var.max_file_limit
         site_list = mbot_api.site.list()
-        h_sites = ['mteam', 'pttime', 'hdbd', 'nicept', 'exoticaz']
+        h_sites = ['mteam', 'pttime', 'hdbd', 'nicept']
         self.enable_site = [site.site_id for site in site_list if site.site_id in h_sites]
 
     def search_by_remote(self, keyword):
