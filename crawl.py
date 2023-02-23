@@ -176,8 +176,8 @@ class javbus_crawl:
                               files={'smfile': open(f'{avatar_img_path}/{star_name}.jpg', 'rb')},
                               proxies=self.proxies, timeout=30).json()
             if r["success"]:
-                img_url = r.json()['data']['url']
-                del_url = r.json()['data']['delete']
+                img_url = r['data']['url']
+                del_url = r['data']['delete']
                 avatar = {
                     "img_url": img_url,
                     "del_url": del_url
