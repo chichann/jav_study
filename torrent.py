@@ -54,11 +54,13 @@ def get_best_torrent(torrents):
 def best_torrent_echo(best_torrent: dict):
     if best_torrent:
         name = best_torrent['name']
-        size = best_torrent['size']
         subject = best_torrent['subject']
+        site_id = best_torrent['site_id']
+        size = best_torrent['size']
         upload_count = best_torrent['upload_count']
         caption = f'种子标题：{name}\n' \
                   f'种子描述：{subject}\n' \
+                  f'站点：{site_id}\n' \
                   f'文件大小：{size}\n' \
                   f'做种人数：{upload_count}\n'
         poster_url = best_torrent['poster_url']

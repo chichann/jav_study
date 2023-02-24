@@ -93,10 +93,16 @@ def add_un_download_list(code):
         un_download_code = [code]
     if set_cache(sign='un_download_code', value=un_download_code):
         _LOGGER.info(f'「{code}」已添加到未下载列表，等待下次重试。')
-        caption, pic = jav_list_echo(jav_crawl().jav_search(code))
-        send_notify(title='有新的学习资料添加到未下载列表\n',
-                    content=caption[0],
-                    pic=pic[0])
+        search_result = jav_crawl().jav_search(code)
+        if search_result:
+            caption, pic = jav_list_echo(search_result)
+            send_notify(title='有新的学习资料添加到未下载列表\n',
+                        content=caption[0],
+                        pic=pic[0])
+        else:
+            title = f'未找到「{code}」的相关学习资料\n'
+            caption = f'未找到「{code}」的相关学习资料,请检查图书馆是否有该资料。'
+            send_notify(title=title, content=caption)
         return True
 
 

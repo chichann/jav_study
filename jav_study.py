@@ -62,6 +62,7 @@ def un_download_research():
         _LOGGER.info(f'休息10-20秒继续下一个')
         time.sleep(random.randint(10, 20))
     if downloaded_code_now:
+        _LOGGER.info(f'本次提交下载的番号如下：「{",".join(downloaded_code_now)}」，删除未下载列表中的记录')
         for item in downloaded_code_now:
             un_download_code.remove(item)
         set_cache(sign='un_download_code', value=un_download_code)
