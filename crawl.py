@@ -5,7 +5,7 @@ from bs4 import BeautifulSoup, SoupStrainer
 import logging
 
 from .event import event_var
-# from .common import str_cookies_to_dict
+from .common import wait_for_mteam
 from .torrent import get_weight
 
 _LOGGER = logging.getLogger(__name__)
@@ -235,6 +235,7 @@ class site_torrent_crawl:
 
     def search_by_remote(self, keyword):
         try:
+            _LOGGER.info(f'开始从站点搜索{keyword}...')
             query = SearchQuery(SearchType.Keyword, keyword)
             search_result = server.site.search_remote(query, [CateLevel1.AV], 15, self.enable_site)
             return search_result
@@ -242,9 +243,22 @@ class site_torrent_crawl:
             logging.error(f'搜索{keyword}失败，错误信息：{e}', exc_info=True)
             return None
 
-    def search_by_keyword(self, keyword):
+    def search_by_local(self, keyword):
         try:
-            search_result = self.search_by_remote(keyword)
+            _LOGGER.info(f'开始从本地数据库搜索{keyword}...')
+            query = SearchQuery(SearchType.Keyword, keyword)
+            search_result = server.site.search_local(query, [CateLevel1.AV])
+            return search_result
+        except Exception as e:
+            logging.error(f'搜索{keyword}失败，错误信息：{e}', exc_info=True)
+            return None
+
+    def search_by_keyword(self, keyword, task):
+        try:
+            if task == 'local':
+                search_result = self.search_by_local(keyword)
+            else:
+                search_result = self.search_by_remote(keyword)
             torrents = []
             if search_result:
                 for item in search_result:
@@ -272,7 +286,9 @@ class site_torrent_crawl:
                     torrents.append(torrent_rank)
                 return torrents
             else:
-                return None
+                if task == 'remote':
+                    _LOGGER.error('可能遭遇馒头限流，强制等待三分钟。')
+                    wait_for_mteam()
         except Exception as e:
             logging.error(f'搜索种子出错，错误信息：{e}', exc_info=True)
             return None

@@ -37,7 +37,7 @@ def un_download_code_research_task():
 @plugin.task('research_star_sub', '老师订阅重新搜索', cron_expression='15 8,18 * * *')
 def research_star_sub_task():
     search_code_by_star_record()
-    run_sub_star_record()
+    run_sub_star_record(task='local')
 
 
 @plugin.task('sync_emby_lib', '同步emby库存信息', cron_expression='0 */6 * * *')
@@ -47,6 +47,7 @@ def sync_emby_lib_task():
 
 
 def un_download_research():
+    task = 'local'
     un_download_code = get_cache(sign='un_download_code')
     downloaded_code_now = []
     if not un_download_code:
@@ -54,18 +55,18 @@ def un_download_research():
         return
     _LOGGER.info(f'开始重新搜索未下载列表中的番号：{",".join(un_download_code)}')
     for code in un_download_code:
-        code_sub_result = torrent_main(code)
+        code_sub_result = torrent_main(code, task=task)
         if code_sub_result["flag"] == 0:
             _LOGGER.info(f'「{code}」重新搜索未找到资源，等待下次重试。')
         elif code_sub_result["flag"] == 1:
             downloaded_code_now.append(code)
-        _LOGGER.info(f'休息10-20秒继续下一个')
-        time.sleep(random.randint(10, 20))
+        time.sleep(random.randint(2, 5))
     if downloaded_code_now:
         _LOGGER.info(f'本次提交下载的番号如下：「{",".join(downloaded_code_now)}」，删除未下载列表中的记录')
         for item in downloaded_code_now:
             un_download_code.remove(item)
         set_cache(sign='un_download_code', value=un_download_code)
+    _LOGGER.info('未下载列表重新搜索完成')
 
 
 def sync_emby_lib():
@@ -151,7 +152,7 @@ def run_and_download_list():
             if code_list:
                 for code in code_list:
                     _LOGGER.info(f'番号「{code}」提交搜索')
-                    code_sub_result = torrent_main(code)
+                    code_sub_result = torrent_main(code, task='remote')
                     if code_sub_result["flag"] == 0:
                         _LOGGER.error(f'榜单TOP20{code_sub_result["sub_result"]}')
                         add_un_download_list(code)
@@ -221,7 +222,7 @@ def sub_by_star(star, date):
     _LOGGER.info(f'开始监控{star_info["monitor_date"]}之后的影片')
     search_code_by_single_star(star_info)
     single_star_info = get_cache(sign=star_info["star_name"])
-    run_sub_single_star_code(single_star_info)
+    run_sub_single_star_code(single_star_info, task='remote')
     return True
 
 
@@ -268,18 +269,18 @@ def search_code_by_single_star(star_info):
     _LOGGER.info(f'「{star_info["star_name"]}」影片同步数据完成')
 
 
-def run_sub_star_record():
+def run_sub_star_record(task):
     actor_sub = get_cache(sign='actor_sub')
     if actor_sub:
         for star_info in actor_sub:
             single_star_info = get_cache(sign=star_info['star_name'])
-            run_sub_single_star_code(single_star_info)
+            run_sub_single_star_code(single_star_info, task)
         _LOGGER.info('订阅的老师影片搜索完成')
     else:
         _LOGGER.info('未发现订阅的老师')
 
 
-def run_sub_single_star_code(star_info):
+def run_sub_single_star_code(star_info, task):
     if star_info["movie_list"]:
         for movie in star_info["movie_list"]:
             # 判断movie['status'] == 0，以及movie['release_date']是否大于monitor_date,如果是则提交下载
@@ -289,26 +290,35 @@ def run_sub_single_star_code(star_info):
                     continue
                 if movie["release_date"] >= star_info["monitor_date"]:
                     _LOGGER.info(f'开始搜索「{star_info["star_name"]}」的影片「{movie["movie_code"]}」')
-                    code_sub_result = torrent_main(movie["movie_code"])
+                    code_sub_result = torrent_main(movie["movie_code"], task)
                     if code_sub_result["flag"] == 0:
                         _LOGGER.error(
                             f'「{movie["movie_code"]}」下载失败，错误信息：{code_sub_result["sub_result"]}')
                         add_un_download_list(movie['movie_code'])
-                        _LOGGER.info(f'休息10-20秒继续下一个')
-                        time.sleep(random.randint(10, 20))
+                        if task == 'remote':
+                            _LOGGER.info(f'休息10-20秒继续下一个')
+                            time.sleep(random.randint(10, 20))
+                        else:
+                            time.sleep(random.randint(2, 5))
                         continue
                     elif code_sub_result["flag"] == 1:
                         _LOGGER.info(f'「{movie["movie_code"]}」下载成功')
                         movie["status"] = 1
-                        _LOGGER.info(f'休息10-20秒继续下一个')
-                        time.sleep(random.randint(10, 20))
+                        if task == 'remote':
+                            _LOGGER.info(f'休息10-20秒继续下一个')
+                            time.sleep(random.randint(10, 20))
+                        else:
+                            time.sleep(random.randint(2, 5))
                         continue
                     else:
                         _LOGGER.error(
                             f'「{movie["movie_code"]}」下载失败，错误信息：{code_sub_result["sub_result"]}')
                         movie["status"] = 1
-                        _LOGGER.info(f'休息10-20秒继续下一个')
-                        time.sleep(random.randint(10, 20))
+                        if task == 'remote':
+                            _LOGGER.info(f'休息10-20秒继续下一个')
+                            time.sleep(random.randint(10, 20))
+                        else:
+                            time.sleep(random.randint(2, 5))
                         continue
         _LOGGER.info(f'{star_info["star_name"]}的影片搜索完成')
         set_cache(sign=star_info["star_name"], value=star_info)
@@ -316,7 +326,7 @@ def run_sub_single_star_code(star_info):
         _LOGGER.info(f'「{star_info["star_name"]}」无影片记录')
 
 
-def torrent_main(code):
+def torrent_main(code, task):
     code_sub_result = {
         "code": code,
         "sub_result": "",
@@ -324,7 +334,7 @@ def torrent_main(code):
         "caption": "",
         "torrent": "",
     }
-    torrents = site_torrent_crawl().search_by_keyword(keyword=code)
+    torrents = site_torrent_crawl().search_by_keyword(keyword=code, task=task)
     if torrents:
         best_torrent = get_best_torrent(torrents)
         if best_torrent:

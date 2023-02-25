@@ -1,6 +1,7 @@
 from mbot.openapi import mbot_api
 import requests
 import logging
+from .common import wait_for_mteam
 
 _LOGGER = logging.getLogger(__name__)
 server = mbot_api
@@ -92,10 +93,26 @@ def download_torrent(code, torrent, torrents_folder):
         'https': proxy,
         'socks5': proxy,
     }
-    res = requests.get(torrent["download_url"], headers=headers, proxies=proxies, timeout=30)
+    res = get_torrent_res(torrent["download_url"], headers, proxies, timeout=30)
+    if 'cloudflare' in res.text:
+        _LOGGER.error(f'「{site_id}」站点状态当前不可用，请检查可用性。')
+        return None
     torrent_path = f'{torrents_folder}/{code}.torrent'
 
     with open(torrent_path, 'wb') as torrent:
         torrent.write(res.content)
         torrent.flush()
     return torrent_path
+
+
+def get_torrent_res(url, headers, proxies, timeout=30):
+    try:
+        res = requests.get(url, headers=headers, proxies=proxies, timeout=timeout)
+        if 'google' in res.text:
+            _LOGGER.error('可能遭遇馒头限流，强制等待三分钟。')
+            wait_for_mteam()
+            return get_torrent_res(url, headers, proxies, timeout)
+        return res
+    except Exception as e:
+        _LOGGER.error(f'请求失败，错误信息：{e}')
+        return None

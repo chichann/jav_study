@@ -1,6 +1,9 @@
 from mbot.core.plugins import plugin
 from mbot.core.plugins import PluginContext, PluginMeta
 from mbot.openapi import mbot_api
+import threading
+import time
+
 import logging
 
 _LOGGER = logging.getLogger(__name__)
@@ -135,6 +138,19 @@ def judge_never_sub(code):
             _LOGGER.info(f'「{code}」已存在于Emby库中，不会再重复下载。')
         return emby_exist
     return False
+
+
+# 创建一个线程锁对象
+lock = threading.Lock()
+
+
+def wait_for_mteam():
+    lock.acquire()
+    try:
+        time.sleep(180)
+    finally:
+        # 释放线程锁
+        lock.release()
 
 
 def send_notify(title, content, pic):

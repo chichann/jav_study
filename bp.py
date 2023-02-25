@@ -62,7 +62,7 @@ def sub():
         if judge_never_sub(code):
             return api_result(code=1, message='订阅失败', data=f'「{code}」已经订阅过了')
         else:
-            code_sub_result = torrent_main(code)
+            code_sub_result = torrent_main(code, task='remote')
             if code_sub_result["flag"] == 1:
                 return api_result(code=0, message='订阅并下载成功', data=code_sub_result["sub_result"])
             elif code_sub_result["flag"] == 0:
@@ -83,7 +83,7 @@ def tg_sub():
         if judge_never_sub(code):
             return api_result(code=1, message='订阅失败', data=f'「{code}」已经订阅过了')
         else:
-            code_sub_result = torrent_main(code)
+            code_sub_result = torrent_main(code, task='remote')
             if code_sub_result["flag"] == 1:
                 return api_result(code=0, message='订阅并下载成功', data=code_sub_result)
             elif code_sub_result["flag"] == 0:

@@ -24,7 +24,7 @@ def jav_sub_code_command(
         if judge_never_sub(code):
             _LOGGER.info(f'番号「{code}」已经订阅过了')
             return PluginCommandResponse(True, f'番号「{code}」已经订阅过了')
-        code_sub_result = torrent_main(code)
+        code_sub_result = torrent_main(code, task='remote')
         if code_sub_result["flag"] == 1:
             return PluginCommandResponse(True, f'番号「{code}」提交订阅成功')
         elif code_sub_result["flag"] == 0:
@@ -87,7 +87,7 @@ def jav_sub_research_command(ctx: PluginCommandContext,
             return PluginCommandResponse(True, f'订阅中重新搜索完成')
         elif task == "sub_star":
             _LOGGER.info(f'老师订阅重新搜索')
-            run_sub_star_record()
+            run_sub_star_record(task='local')
             return PluginCommandResponse(True, f'订阅中重新搜索完成')
         elif task == "jav_list":
             if event_var.jav_list_enable:
