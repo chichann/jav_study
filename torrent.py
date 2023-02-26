@@ -1,7 +1,7 @@
 from mbot.openapi import mbot_api
 import requests
 import logging
-from .common import wait_for_mteam
+from .common import wait_for_mteam, str_cookies_to_dict
 
 _LOGGER = logging.getLogger(__name__)
 server = mbot_api
@@ -93,25 +93,36 @@ def download_torrent(code, torrent, torrents_folder):
         'https': proxy,
         'socks5': proxy,
     }
-    res = get_torrent_res(torrent["download_url"], headers, proxies, timeout=30)
-    if 'cloudflare' in res.content.decode('utf-8'):
-        _LOGGER.error(f'「{site_id}」站点状态当前不可用，请检查可用性。')
-        return None
-    torrent_path = f'{torrents_folder}/{code}.torrent'
-    with open(torrent_path, 'wb') as torrent:
-        torrent.write(res.content)
-        torrent.flush()
-    return torrent_path
-
-
-def get_torrent_res(url, headers, proxies, timeout=30):
+    cookies = str_cookies_to_dict(cookie)
     try:
-        res = requests.get(url, headers=headers, proxies=proxies, timeout=timeout)
+        res = get_torrent_res(site_id, torrent["download_url"], headers, cookies, proxies, timeout=30)
+    except requests.exceptions.RequestException as e:
+        _LOGGER.error(f'[{site_id}]请求失败：{str(e)}')
+        return None
+    if res is None:
+        return None
+    torrent_path = f'{torrents_folder}/[{site_id}]{code}.torrent'
+    try:
+        with open(torrent_path, 'wb') as torrent:
+            torrent.write(res.content)
+            torrent.flush()
+        return torrent_path
+    except Exception as e:
+        logging.error(f'[{site_id}]写入种子文件失败：{str(e)}', exc_info=True)
+        return None
+
+
+def get_torrent_res(site_id, url, headers, cookies, proxies, timeout=30):
+    try:
+        res = requests.get(url, headers=headers, cookies=cookies, proxies=proxies, timeout=timeout)
         if '404' in res.content.decode('utf-8'):
             _LOGGER.error('可能遭遇馒头限流，强制等待三分钟。')
             wait_for_mteam()
-            return get_torrent_res(url, headers, proxies, timeout)
+            return get_torrent_res(site_id, url, headers, cookies, proxies, timeout)
+        if 'Cloudflare' in res.content.decode():
+            _LOGGER.error(f'[{site_id}]站点状态当前不可用，请检查可用性。')
+            return None
         return res
     except Exception as e:
-        _LOGGER.error(f'请求失败，错误信息：{e}')
+        _LOGGER.error(f'请求种子失败，错误信息：{e}')
         return None
