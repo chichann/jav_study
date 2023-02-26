@@ -1,5 +1,7 @@
 from mbot.core.plugins import plugin, PluginCommandContext, PluginCommandResponse
 from mbot.core.params import ArgSchema, ArgType
+from mbot.openapi import mbot_api
+
 import logging
 
 from .jav_study import torrent_main, run_and_download_list, un_download_research, get_sub_code_list, delete_code_sub, \
@@ -7,7 +9,9 @@ from .jav_study import torrent_main, run_and_download_list, un_download_research
 from .common import set_true_code, add_un_download_list, judge_never_sub
 from .event import event_var
 from .embyapi import EmbyApi
+
 emby = EmbyApi()
+server = mbot_api
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -140,3 +144,15 @@ def jav_sub_star_delete(ctx: PluginCommandContext,
     except Exception as e:
         logging.error(f'老师订阅删除失败，错误信息：{e}', exc_info=True)
         return PluginCommandResponse(False, f'老师订阅删除失败，错误信息：{e}')
+
+#
+# @plugin.command(name='restart_app', title='重启程序', desc='点击重启程序', icon='AutoAwesome',
+#                 run_in_background=True)
+# def jav_sub_star_delete(ctx: PluginCommandContext):
+#     try:
+#         _LOGGER.info(f'重启程序')
+#         server.common.restart_app()
+#     except Exception as e:
+#         logging.error(f'重启程序失败，错误信息：{e}', exc_info=True)
+#         return PluginCommandResponse(False, f'重启程序失败，错误信息：{e}')
+#

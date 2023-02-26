@@ -207,17 +207,24 @@ class javbus_crawl:
 
     def crawl_list_by_star(self, star_id):
         try:
-            url = 'https://www.javbus.com/star/' + star_id
-            r = requests.get(url, headers=self.headers, proxies=self.proxies, timeout=30)
-            soup = BeautifulSoup(r.text, 'html.parser')
-            movies = soup.select('a.movie-box')
+            count = 1
             movie_list = []
-            for movie in movies:
-                movie_code = movie.get('href').split('/')[-1]
-                movie_name = movie.select('div.photo-info > span')[0].contents[0]
-                movie_date = movie.select('div.photo-info > span > date')[1].text
-                movie_list.append(
-                    {"movie_code": movie_code, "movie_name": movie_name, "release_date": movie_date, "status": 0})
+            while True:
+                url = f'https://www.javbus.com/star/{star_id}/{str(count)}'
+                r = requests.get(url, headers=self.headers, proxies=self.proxies, timeout=30)
+                soup = BeautifulSoup(r.text, 'html.parser')
+                pages = soup.select('ul.pagination > li')
+                page = len(pages) - 1
+                movies = soup.select('a.movie-box')
+                for movie in movies:
+                    movie_code = movie.get('href').split('/')[-1]
+                    movie_name = movie.select('div.photo-info > span')[0].contents[0]
+                    movie_date = movie.select('div.photo-info > span > date')[1].text
+                    movie_list.append(
+                        {"movie_code": movie_code, "movie_name": movie_name, "release_date": movie_date, "status": 0})
+                count += 1
+                if count > page:
+                    break
             return movie_list
         except Exception as e:
             logging.error(f'公交车获取演员影片列表失败，原因为{e}', exc_info=True)
