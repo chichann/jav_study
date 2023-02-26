@@ -82,7 +82,13 @@ def sync_emby_lib():
 def search_list_judge_recorded(code_list_before):
     code_list = [item['av_id'] for item in code_list_before]
     exist_list = (get_cache(sign='downloaded_code') or []) + (get_cache(sign='un_download_code') or [])
-    code_list_after = [item for item in code_list if item not in exist_list and not emby.check_emby_item(item)]
+    code_list_after = []
+    for item in code_list:
+        if item in exist_list:
+            continue
+        if emby.is_emby and not emby.check_emby_item(item):
+            continue
+        code_list_after.append(item)
     return code_list_after
 
 
@@ -143,10 +149,10 @@ def del_avatar_img(url):
 
 
 def run_and_download_list():
-    result = jav_crawl().get_jav_like()
+    list_result = jav_crawl().get_jav_like()
     try:
-        if result:
-            code_list = search_list_judge_recorded(result)
+        if list_result:
+            code_list = search_list_judge_recorded(list_result)
             if len(code_list) > 0:
                 _LOGGER.info(f'榜单TOP20本次新增{"、".join(code_list)},共{len(code_list)}部')
             if code_list:
@@ -320,7 +326,7 @@ def run_sub_single_star_code(star_info, task):
                         else:
                             time.sleep(random.randint(2, 5))
                         continue
-        _LOGGER.info(f'{star_info["star_name"]}的影片搜索完成')
+        _LOGGER.info(f'「{star_info["star_name"]}」的影片搜索完成')
         set_cache(sign=star_info["star_name"], value=star_info)
     else:
         _LOGGER.info(f'「{star_info["star_name"]}」无影片记录')

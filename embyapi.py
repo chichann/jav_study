@@ -21,6 +21,7 @@ class Config:
                     self.base_url = f'https://{self.server_url}:{self.port}' if self.https else f'http://{self.server_url}:{self.port}'
                     self.X_Emby_Token = config["api_key"]
                     self.Limit = 50
+                    break
                 else:
                     self.is_emby = False
                     self.server_url = None
@@ -65,8 +66,6 @@ class EmbyApi:
             if user_item["Policy"]["IsAdministrator"]:
                 user_id = user_item["Id"]
         emby_item = self.get_emby_item_by_keyword(user_id, keyword)
-        # if len(emby_item["Items"]) > 1:
-        #     return False
         if len(emby_item["Items"]) < 1:
             return False
         if keyword in emby_item["Items"][0]["Name"]:
