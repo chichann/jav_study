@@ -115,14 +115,15 @@ def download_torrent(code, torrent, torrents_folder):
 def get_torrent_res(site_id, url, headers, cookies, proxies, timeout=30):
     try:
         res = requests.get(url, headers=headers, cookies=cookies, proxies=proxies, timeout=timeout)
-        if '404' in res.content.decode('utf-8'):
+        if 'application/x-bittorrent' in res.headers.get('Content-Type'):
+            return res
+        if '404' in res.content.decode():
             _LOGGER.error('可能遭遇馒头限流，强制等待三分钟。')
             wait_for_mteam()
             return get_torrent_res(site_id, url, headers, cookies, proxies, timeout)
         if 'Cloudflare' in res.content.decode():
             _LOGGER.error(f'[{site_id}]站点状态当前不可用，请检查可用性。')
             return None
-        return res
     except Exception as e:
         _LOGGER.error(f'请求种子失败，错误信息：{e}')
         return None
