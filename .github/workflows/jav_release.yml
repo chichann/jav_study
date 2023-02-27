@@ -1,7 +1,7 @@
 on:
   push:
-    paths:
-      - 'jav_study/**'
+    tags:
+      - 'v*.*.*'
 
 name: Release
 
@@ -19,6 +19,8 @@ jobs:
       - name: Release-PR
         uses:  google-github-actions/release-please-action@v3.1.2
         with:
+          tag_name: ${{ github.ref }}
+          release_name: ${{ github.ref }}
           release-type: node
           token: ${{secrets.JAV_RELEASE}}
           pull-request-title-pattern: "chore${scope}: release ${version}"
