@@ -125,11 +125,24 @@ class javbus_crawl:
         self.headers = event_var.headers
         self.proxies = event_var.proxies
         self.smms_token = event_var.smms_token
+        self.hosts = [
+            'https://www.javbus.com',
+            'https://www.dmmbus.lol',
+            'https://www.buscdn.lol',
+            'https://www.busdmm.lol'
+        ]
 
     def crawl_star_code(self, star):
         try:
-            url = 'https://www.javbus.com/searchstar/' + star
-            r = requests.get(url, headers=self.headers, proxies=self.proxies, timeout=30)
+            for host in self.hosts:
+                url = f"{host}/searchstar/{star}"
+                try:
+                    r = requests.get(url, headers=self.headers, proxies=self.proxies, timeout=30)
+                    break
+                except Exception as e:
+                    continue
+            if not r:
+                return None
             soup = BeautifulSoup(r.text, 'html.parser')
             stars = soup.select('a.avatar-box')
             if len(stars) > 1:
@@ -192,8 +205,15 @@ class javbus_crawl:
 
     def crawl_actor_detail(self, star_id):
         try:
-            url = 'https://www.javbus.com/star/' + star_id
-            r = requests.get(url, headers=self.headers, proxies=self.proxies, timeout=30)
+            for host in self.hosts:
+                url = f"{host}/star/{star_id}"
+                try:
+                    r = requests.get(url, headers=self.headers, proxies=self.proxies, timeout=30)
+                    break
+                except Exception as e:
+                    continue
+            if not r:
+                return None
             soup = BeautifulSoup(r.text, 'html.parser')
             actor_details = soup.select('div.avatar-box > div.photo-info > p')
             content = []
