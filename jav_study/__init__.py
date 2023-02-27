@@ -8,4 +8,4 @@ from .torrent import *
 from .translate import *
 from .download_client import *
 from .bp import *
-
+from .update import *
