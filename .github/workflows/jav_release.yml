@@ -20,7 +20,7 @@ jobs:
         uses:  google-github-actions/release-please-action@v3.1.2
         with:
           release-type: node
-          token: ${{secrets.RELEASE_TOKEN}}
+          token: ${{secrets.JAV_RELEASE}}
           pull-request-title-pattern: "chore${scope}: release ${version}"
           extra-files: jav_study/manifest.json
 
