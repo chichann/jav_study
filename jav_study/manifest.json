@@ -4,7 +4,7 @@
   "author": "NaNaKo_",
   "description": "学习资料查询及下载。使用前务必查看README！",
   "_comment_start": "x-release-please-start-version",
-  "version": "1.2.14",
+  "version": "1.0.0",
   "_comment_end": "x-release-please-end",
   "requirements": [],
   "dependencies": {
