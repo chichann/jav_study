@@ -176,17 +176,17 @@ class javbus_crawl:
     def save_avatar_and_upload(self, star_name, star_avatar):
         import os
         try:
-            avatar_img_path = '/plugins/jav_study/avatar_img'
+            avatar_img_path = '/data/plugins/jav_study/avatar_img/'
             if not os.path.exists(avatar_img_path):
                 os.makedirs(avatar_img_path)
             r = requests.get(star_avatar, headers=self.headers, proxies=self.proxies, timeout=30)
             if r.status_code == 200:
-                with open(f'{avatar_img_path}/{star_name}.jpg', 'wb') as f:
+                with open(f'{avatar_img_path}{star_name}.jpg', 'wb') as f:
                     f.write(r.content)
                 f.close()
             r = requests.post('https://sm.ms/api/v2/upload',
                               headers={'Authorization': self.smms_token},
-                              files={'smfile': open(f'{avatar_img_path}/{star_name}.jpg', 'rb')},
+                              files={'smfile': open(f'{avatar_img_path}{star_name}.jpg', 'rb')},
                               proxies=self.proxies, timeout=30).json()
             if r["success"]:
                 img_url = r['data']['url']
