@@ -144,15 +144,3 @@ def jav_sub_star_delete(ctx: PluginCommandContext,
     except Exception as e:
         logging.error(f'老师订阅删除失败，错误信息：{e}', exc_info=True)
         return PluginCommandResponse(False, f'老师订阅删除失败，错误信息：{e}')
-
-#
-# @plugin.command(name='restart_app', title='重启程序', desc='点击重启程序', icon='AutoAwesome',
-#                 run_in_background=True)
-# def jav_sub_star_delete(ctx: PluginCommandContext):
-#     try:
-#         _LOGGER.info(f'重启程序')
-#         server.common.restart_app()
-#     except Exception as e:
-#         logging.error(f'重启程序失败，错误信息：{e}', exc_info=True)
-#         return PluginCommandResponse(False, f'重启程序失败，错误信息：{e}')
-#
