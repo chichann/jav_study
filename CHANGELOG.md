@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.3.0](https://github.com/chichann/jav_study/compare/v1.2.15...v1.3.0) (2023-02-27)
+
+
+### Features
+
+* 增加一键更新插件功能 ([25f82f1](https://github.com/chichann/jav_study/commit/25f82f1d1cad3a3743e76f74ec6c970436e10f35))
+
 ### [1.2.15](https://github.com/chichann/jav_study/compare/v1.2.14...v1.2.15) (2023-02-27)
 
 
