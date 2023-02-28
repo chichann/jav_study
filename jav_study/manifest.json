@@ -78,6 +78,13 @@
       "defaultValue": false
     },
     {
+      "fieldName": "chs_enable",
+      "fieldType": "Bool",
+      "label": "是否只下载中文字幕",
+      "helperText": "勾选即只下载有中文字幕的影片。",
+      "defaultValue": false
+    },
+    {
       "fieldName": "translate_enable",
       "fieldType": "Bool",
       "label": "是否使用百度翻译",

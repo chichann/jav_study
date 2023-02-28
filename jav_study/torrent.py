@@ -2,6 +2,7 @@ from mbot.openapi import mbot_api
 import requests
 import logging
 from .common import wait_for_mteam, str_cookies_to_dict
+from .event import event_var
 
 _LOGGER = logging.getLogger(__name__)
 server = mbot_api
@@ -44,9 +45,10 @@ def get_weight(torrent_rank, min_size, max_size):
 
 
 def get_best_torrent(torrents):
+    weight = 999 if event_var.chs_enable else 0
     if torrents:
         torrents.sort(key=lambda x: x['weight'], reverse=True)
-        if torrents[0]['weight'] <= 0:
+        if torrents[0]['weight'] <= weight:
             return None
         return torrents[0]
     return None

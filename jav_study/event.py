@@ -19,6 +19,7 @@ class event_var:
         self.min_file_limit = None
         self.max_file_limit = None
         self.jav_list_enable = False
+        self.chs_enable = False
         self.translate_enable = False
         self.appid = ''
         self.sercet = ''
@@ -62,6 +63,7 @@ def after_setup(plugin_meta: PluginMeta, config: Dict[str, Any]):
     event_var.jav_list_enable = config.get('jav_list_enable')
     if event_var.jav_list_enable:
         _LOGGER.info('学习资料自动下载榜单功能已开启')
+    event_var.chs_enable = config.get('chs_enable')
     event_var.translate_enable = config.get('translate_enable')
     if event_var.translate_enable:
         event_var.appid = config.get('appid')
@@ -105,6 +107,7 @@ def config_changed(config: Dict[str, Any]):
     event_var.jav_list_enable = config.get('jav_list_enable')
     if event_var.jav_list_enable:
         _LOGGER.info('学习资料自动下载榜单功能已开启')
+    event_var.chs_enable = config.get('chs_enable')
     event_var.translate_enable = config.get('translate_enable')
     if event_var.translate_enable:
         event_var.appid = config.get('appid')
