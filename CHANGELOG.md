@@ -1,5 +1,12 @@
 # Changelog
 
+### [1.2.18](https://github.com/chichann/jav_study/compare/v1.2.17...v1.2.18) (2023-02-28)
+
+
+### Bug Fixes
+
+* 增加只下中文全局选项，选种时排除无中文资源 ([3c74c50](https://github.com/chichann/jav_study/commit/3c74c507022a057fbaecedcf92114f215bdf8a2d))
+
 ### [1.2.17](https://github.com/chichann/jav_study/compare/v1.2.16...v1.2.17) (2023-02-28)
 
 
