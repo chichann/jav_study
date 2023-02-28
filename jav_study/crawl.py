@@ -145,8 +145,8 @@ class javbus_crawl:
                 return None
             soup = BeautifulSoup(r.text, 'html.parser')
             stars = soup.select('a.avatar-box')
-            if len(stars) > 1:
-                return None
+            # if len(stars) > 1:
+            #     return None
             if len(stars) < 1:
                 return None
             url = stars[0].get('href')
@@ -179,7 +179,11 @@ class javbus_crawl:
             avatar_img_path = '/data/plugins/jav_study/avatar_img/'
             if not os.path.exists(avatar_img_path):
                 os.makedirs(avatar_img_path)
-            r = requests.get(star_avatar, headers=self.headers, proxies=self.proxies, timeout=30)
+            try:
+                r = requests.get(star_avatar, headers=self.headers, proxies=self.proxies, timeout=30)
+            except Exception as e:
+                _LOGGER.error(f'老师头像下载失败，错误信息{e}')
+                return None
             if r.status_code == 200:
                 with open(f'{avatar_img_path}{star_name}.jpg', 'wb') as f:
                     f.write(r.content)
