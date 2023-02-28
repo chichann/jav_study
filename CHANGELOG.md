@@ -1,5 +1,13 @@
 # Changelog
 
+### [1.2.17](https://github.com/chichann/jav_study/compare/v1.2.16...v1.2.17) (2023-02-28)
+
+
+### Bug Fixes
+
+* 优化头像获取报错；放宽演员搜索限制，搜索结果超过一个时自动取第一个 ([0ce8d9b](https://github.com/chichann/jav_study/commit/0ce8d9b156cd9906b4ada03e59edf27466ee8b0d))
+* 优化种子下载报错 ([14e3b63](https://github.com/chichann/jav_study/commit/14e3b635b1a4c96e64d9e6a9a0745e44fdd10bc3))
+
 ### [1.2.16](https://github.com/chichann/jav_study/compare/v1.2.15...v1.2.16) (2023-02-27)
 
 
