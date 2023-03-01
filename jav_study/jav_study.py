@@ -29,12 +29,12 @@ def jav_list_task():
         run_and_download_list()
 
 
-@plugin.task('un_download_code_research_task', '番号订阅重新搜索', cron_expression='16 7,17 * * *')
+@plugin.task('un_download_code_research_task', '番号订阅重新搜索', cron_expression='16 6,18 * * *')
 def un_download_code_research_task():
     un_download_research()
 
 
-@plugin.task('research_star_sub', '老师订阅重新搜索', cron_expression='15 8,18 * * *')
+@plugin.task('research_star_sub', '老师订阅重新搜索', cron_expression='15 5,17 * * *')
 def research_star_sub_task():
     search_code_by_star_record()
     run_sub_star_record(task='local')
@@ -44,6 +44,11 @@ def research_star_sub_task():
 def sync_emby_lib_task():
     if emby.is_emby:
         sync_emby_lib()
+
+
+@plugin.task('refresh_movie_info', '刷新影片信息', cron_expression='1 0 * * *')
+def refresh_movie_info_task():
+    refresh_actor_info()
 
 
 def un_download_research():
@@ -77,6 +82,24 @@ def sync_emby_lib():
             _LOGGER.info(f'「{item}」已经在emby库中，删除未下载列表中的记录')
             un_download_code.remove(item)
         set_cache(sign='un_download_code', value=un_download_code)
+
+
+def refresh_actor_info():
+    actor_sub = get_cache(sign='actor_sub')
+    if actor_sub:
+        for star_info in actor_sub:
+            record_info = get_cache(sign=star_info['star_name'])
+            for movie in record_info["movie_list"]:
+                movie_code = movie["movie_code"]
+                movie_url = f'https://www.javbus.com/{movie_code}'
+                movie["movie_url"] = movie_url
+                if not movie.get("movie_actors"):
+                    try:
+                        movie_actors = javbus_crawl().get_movie_actor(movie_url)
+                        movie["movie_actors"] = movie_actors
+                    except Exception as e:
+                        continue
+            set_cache(sign=star_info['star_name'], value=record_info)
 
 
 def search_list_judge_recorded(code_list_before):

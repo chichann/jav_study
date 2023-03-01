@@ -241,11 +241,14 @@ class javbus_crawl:
                 page = len(pages) - 1
                 movies = soup.select('a.movie-box')
                 for movie in movies:
+                    movie_url = movie.get('href')
                     movie_code = movie.get('href').split('/')[-1]
                     movie_name = movie.select('div.photo-info > span')[0].contents[0]
                     movie_date = movie.select('div.photo-info > span > date')[1].text
+                    movie_actors = self.get_movie_actor(movie_url)
                     movie_list.append(
-                        {"movie_code": movie_code, "movie_name": movie_name, "release_date": movie_date, "status": 0})
+                        {"movie_code": movie_code, "movie_name": movie_name, "movie_url": movie_url,
+                         "movie_actors": movie_actors, "release_date": movie_date, "status": 0})
                 count += 1
                 if count > page:
                     break
@@ -254,6 +257,20 @@ class javbus_crawl:
             logging.error(f'公交车获取演员影片列表失败，原因为{e}', exc_info=True)
             return None
 
+    def get_movie_actor(self, url):
+        try:
+            r = requests.get(url, headers=self.headers, proxies=self.proxies, timeout=30)
+            soup = BeautifulSoup(r.text, 'html.parser')
+            actors = soup.select('span.genre:has(a[href^="https://www.javbus.com/star/"])')
+            actor_list = []
+            for actor in actors:
+                actor_url = actor.select('a')[0].get('href')
+                actor_name = actor.select('a')[0].text
+                actor_list.append({"actor_name": actor_name, "actor_url": actor_url})
+            return actor_list
+        except Exception as e:
+            logging.error(f'公交车获取影片演员列表失败，原因为{e}', exc_info=True)
+            return None
 
 class site_torrent_crawl:
 
