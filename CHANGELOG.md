@@ -1,5 +1,12 @@
 # Changelog
 
+### [1.2.19](https://github.com/chichann/jav_study/compare/v1.2.18...v1.2.19) (2023-03-01)
+
+
+### Bug Fixes
+
+* 影片数据增加演员信息 ([38be6f4](https://github.com/chichann/jav_study/commit/38be6f47e86e062601cda0ebd9d5bf8ec030fd1b))
+
 ### [1.2.18](https://github.com/chichann/jav_study/compare/v1.2.17...v1.2.18) (2023-02-28)
 
 
