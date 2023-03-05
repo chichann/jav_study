@@ -179,6 +179,9 @@ class javbus_crawl:
             avatar_img_path = '/data/plugins/jav_study/avatar_img/'
             if not os.path.exists(avatar_img_path):
                 os.makedirs(avatar_img_path)
+            if 'nowprinting.gif' in star_avatar:
+                _LOGGER.error(f'「{star_name}」老师无头像。')
+                return None
             try:
                 r = requests.get(star_avatar, headers=self.headers, proxies=self.proxies, timeout=30)
             except Exception as e:
