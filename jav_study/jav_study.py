@@ -58,7 +58,7 @@ def un_download_research():
     if not un_download_code:
         _LOGGER.info('未下载列表为空')
         return
-    _LOGGER.info(f'开始重新搜索未下载列表中的番号：{",".join(un_download_code)}')
+    _LOGGER.info(f'开始重新搜索未下载列表中的番号：{",".join(un_download_code)}，共{len(un_download_code)}个。')
     for code in un_download_code:
         code_sub_result = torrent_main(code, task=task)
         if code_sub_result["flag"] == 0:
@@ -109,7 +109,7 @@ def search_list_judge_recorded(code_list_before):
     for item in code_list:
         if item in exist_list:
             continue
-        if emby.is_emby and not emby.check_emby_item(item):
+        if emby.is_emby and emby.check_emby_item(item):
             continue
         code_list_after.append(item)
     return code_list_after
