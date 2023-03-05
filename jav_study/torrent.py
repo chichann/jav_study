@@ -28,6 +28,7 @@ def get_weight(torrent_rank, min_size, max_size):
             break
     # 如果做种人数等于0，权重为-1
     if upload_count == 0:
+        _LOGGER.info(f'[{torrent_rank["site_id"]}]: {content}|做种人数为0,跳过')
         weight = -1
     # 如果文件限制值为0，则表示无限制,跳过以下判断
     if min_size == 0 and max_size == 0:
@@ -35,10 +36,11 @@ def get_weight(torrent_rank, min_size, max_size):
     # 如果文件大小超过限制，权重为-1
     size = torrent_rank["size"]
     if 'MB' in size:
-        size = float(size.split('MB')[0]) / 1024
+        size_gb = float(size.split('MB')[0]) / 1024
     elif 'GB' in size:
-        size = float(size.split('GB')[0])
-    if size < float(min_size) or size > float(max_size):
+        size_gb = float(size.split('GB')[0])
+    if size_gb < float(min_size) or size_gb > float(max_size):
+        _LOGGER.info(f'[{torrent_rank["site_id"]}]: {content}|文件大小{size}不在限制范围内')
         weight = -1
     _LOGGER.info(f'[{torrent_rank["site_id"]}]: {content}|最终权重为{weight}')
     return weight
