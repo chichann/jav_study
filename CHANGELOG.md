@@ -1,5 +1,14 @@
 # Changelog
 
+### [1.2.20](https://github.com/chichann/jav_study/compare/v1.2.19...v1.2.20) (2023-03-05)
+
+
+### Bug Fixes
+
+* 优化老师无头像时的处理 ([7889624](https://github.com/chichann/jav_study/commit/78896242b2e9c01395d5f9f709fc97068697dc08))
+* 优化选种的详情日志打印 ([053992a](https://github.com/chichann/jav_study/commit/053992aee5e27b8d6f47194a93366509614ac986))
+* 修复同步TOP20时的库存判断逻辑问题 ([0a3bb56](https://github.com/chichann/jav_study/commit/0a3bb5674efa2e6afac3a8fded75fa5f7561a431))
+
 ### [1.2.19](https://github.com/chichann/jav_study/compare/v1.2.18...v1.2.19) (2023-03-01)
 
 
