@@ -105,7 +105,7 @@ def add_un_download_list(code):
         else:
             title = f'未找到「{code}」的相关学习资料\n'
             caption = f'未找到「{code}」的相关学习资料,请检查图书馆是否有该资料。'
-            send_notify(title=title, content=caption)
+            send_notify(title=title, content=caption, pic=None)
         return True
 
 
@@ -136,7 +136,7 @@ def judge_never_sub(code):
         emby_exist = emby.check_emby_item(code)
         if emby_exist:
             _LOGGER.info(f'「{code}」已存在于Emby库中，不会再重复下载。')
-        return emby_exist
+            return True
     return False
 
 

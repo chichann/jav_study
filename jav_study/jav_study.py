@@ -104,7 +104,7 @@ def refresh_actor_info():
 
 def search_list_judge_recorded(code_list_before):
     code_list = [item['av_id'] for item in code_list_before]
-    exist_list = (get_cache(sign='downloaded_code') or []) + (get_cache(sign='un_download_code') or [])
+    exist_list = (get_cache(sign='downloaded_code') or []) + (get_cache(sign='un_download_code') or []) + (get_cache(sign='like_list') or [])
     code_list_after = []
     for item in code_list:
         if item in exist_list:
@@ -202,6 +202,12 @@ def run_and_download_list():
             else:
                 _LOGGER.error('榜单TOP20无更新新片')
                 return True
+            like_list_record = get_cache(sign='like_list')
+            if like_list_record:
+                like_list_record.extend(code_list)
+            else:
+                like_list_record = code_list
+            set_cache(sign='like_list', value=like_list_record)
         else:
             return False
     except Exception as e:
