@@ -1,5 +1,13 @@
 # Changelog
 
+### [1.2.22](https://github.com/chichann/jav_study/compare/v1.2.21...v1.2.22) (2023-03-08)
+
+
+### Bug Fixes
+
+* 优化种子权重算法，放宽做种人数和下载完成人数的条件 ([e068860](https://github.com/chichann/jav_study/commit/e0688606d37544d8a422f14d74be52c7e287e5b7))
+* 若所有种子最大权重仅为0时，选择做种人数最多的种子提交下载 ([e068860](https://github.com/chichann/jav_study/commit/e0688606d37544d8a422f14d74be52c7e287e5b7))
+
 ### [1.2.21](https://github.com/chichann/jav_study/compare/v1.2.20...v1.2.21) (2023-03-07)
 
 
