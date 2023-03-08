@@ -4,6 +4,7 @@ import logging
 import requests
 import os
 import zipfile
+import base64
 server = mbot_api
 _LOGGER = logging.getLogger(__name__)
 
@@ -13,9 +14,10 @@ def update():
     if not os.path.exists(update_dir):
         _LOGGER.info(f'创建update文件夹')
         os.mkdir(update_dir)
-    url = 'https://github.com/chichann/jav_study/releases/latest'
+    base_url = 'aHR0cHM6Ly9naXRodWIuY29tL2NoaWNoYW5uL2phdl9zdHVkeS9yZWxlYXNlcy9sYXRlc3Q='
     try:
-        r = requests.get(url, proxies=event_var.proxies, timeout=30)
+        r = requests.get(base64.b64decode(base_url).decode("utf-8"),
+                         proxies=event_var.proxies, timeout=30)
     except Exception as e:
         _LOGGER.error(f'查询最新版本号出错，原因为：{e}')
         return False
@@ -28,12 +30,13 @@ def update():
         return True
     else:
         _LOGGER.info(f'本地版本为v{version},远程版本为v{remote_v},需要更新')
+        base_url = 'aHR0cHM6Ly9naXRodWIuY29tL2NoaWNoYW5uL2phdl9zdHVkeS9hcmNoaXZlL3JlZnMvdGFncy92'
         try:
-            url = f'https://github.com/chichann/jav_study/archive/refs/tags/v{remote_v}.zip'
+            r = requests.get(f'{base64.b64decode(base_url).decode("utf-8")}{remote_v}.zip',
+                             proxies=event_var.proxies, timeout=30)
         except Exception as e:
             _LOGGER.error(f'下载最新版本出错，原因为：{e}')
             return False
-        r = requests.get(url, proxies=event_var.proxies, timeout=30)
         with open(f'{update_dir}v{remote_v}.zip', 'wb') as f:
             f.write(r.content)
             _LOGGER.info(f'下载最新v{remote_v}版本成功')
