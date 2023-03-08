@@ -1,5 +1,12 @@
 # Changelog
 
+### [1.2.22](https://github.com/chichann/jav_study/compare/v1.2.21...v1.2.22) (2023-03-08)
+
+
+### Bug Fixes
+
+* fix:  ([c39e19e](https://github.com/chichann/jav_study/commit/c39e19e48665f8177060fa0e3228f7659939812c))
+
 ### [1.2.21](https://github.com/chichann/jav_study/compare/v1.2.20...v1.2.21) (2023-03-07)
 
 
