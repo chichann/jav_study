@@ -1,5 +1,12 @@
 # Changelog
 
+### [1.2.21](https://github.com/chichann/jav_study/compare/v1.2.20...v1.2.21) (2023-03-07)
+
+
+### Bug Fixes
+
+* 从未下载列表里删除的榜单影片同步时不会再添加进去 ([d0228d8](https://github.com/chichann/jav_study/commit/d0228d86163b2551412de18b35cb0e39728a96e6))
+
 ### [1.2.20](https://github.com/chichann/jav_study/compare/v1.2.19...v1.2.20) (2023-03-05)
 
 
