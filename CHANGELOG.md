@@ -1,5 +1,12 @@
 # Changelog
 
+### [1.2.23](https://github.com/chichann/jav_study/compare/v1.2.22...v1.2.23) (2023-03-09)
+
+
+### Bug Fixes
+
+* 修复馒头长时间限流可能导致下载种子无限循环的问题 ([a6247c1](https://github.com/chichann/jav_study/commit/a6247c1125bb5b940915216292746e17057110dd))
+
 ### [1.2.22](https://github.com/chichann/jav_study/compare/v1.2.21...v1.2.22) (2023-03-08)
 
 
