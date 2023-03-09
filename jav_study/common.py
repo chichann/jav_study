@@ -1,3 +1,5 @@
+import random
+
 from mbot.core.plugins import plugin
 from mbot.core.plugins import PluginContext, PluginMeta
 from mbot.openapi import mbot_api
@@ -147,7 +149,7 @@ lock = threading.Lock()
 def wait_for_mteam():
     lock.acquire()
     try:
-        time.sleep(180)
+        time.sleep(random.randint(180, 300))
     finally:
         # 释放线程锁
         lock.release()

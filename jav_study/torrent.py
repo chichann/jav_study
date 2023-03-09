@@ -121,16 +121,17 @@ def download_torrent(code, torrent, torrents_folder):
 
 def get_torrent_res(site_id, url, headers, cookies, proxies, timeout=30):
     try:
-        res = requests.get(url, headers=headers, cookies=cookies, proxies=proxies, timeout=timeout)
-        if 'application/x-bittorrent' in res.headers.get('Content-Type'):
-            return res
-        if 'google' in res.url:
-            _LOGGER.error('可能遭遇馒头限流，强制等待三分钟。')
-            wait_for_mteam()
-            return get_torrent_res(site_id, url, headers, cookies, proxies, timeout)
-        if 'Cloudflare' in res.text:
-            _LOGGER.error(f'[{site_id}]站点状态当前不可用，请检查可用性。')
-            return None
+        for i in range(3):
+            res = requests.get(url, headers=headers, cookies=cookies, proxies=proxies, timeout=timeout)
+            if 'application/x-bittorrent' in res.headers.get('Content-Type'):
+                return res
+            if 'google' in res.url:
+                _LOGGER.error('可能遭遇馒头限流，强制等待三到五分钟。')
+                wait_for_mteam()
+                continue
+            if 'Cloudflare' in res.text:
+                _LOGGER.error(f'[{site_id}]站点状态当前不可用，请检查可用性。')
+                return None
     except Exception as e:
         _LOGGER.error(f'请求种子失败，错误信息：{e}')
         return None

@@ -338,7 +338,7 @@ class site_torrent_crawl:
                 return torrents
             else:
                 if task == 'remote':
-                    _LOGGER.error('可能遭遇馒头限流，强制等待三分钟。')
+                    _LOGGER.error('可能遭遇馒头限流，强制等待三到五分钟。')
                     wait_for_mteam()
         except Exception as e:
             logging.error(f'搜索种子出错，错误信息：{e}', exc_info=True)
