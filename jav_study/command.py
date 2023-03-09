@@ -9,7 +9,7 @@ from .jav_study import torrent_main, run_and_download_list, un_download_research
 from .common import set_true_code, add_un_download_list, judge_never_sub
 from .event import event_var
 from .embyapi import EmbyApi
-from .update import update
+from .update import update_self, install_update_mdc
 
 emby = EmbyApi()
 server = mbot_api
@@ -80,7 +80,11 @@ task_list = [
     {
         "name": "更新插件版本(自动重启主程序)",
         "value": "update"
-    }
+    },
+    {
+        "name": "安装或更新MDC-NG(自动重启主程序)",
+        "value": "mdc"
+    },
 ]
 
 
@@ -117,8 +121,12 @@ def jav_sub_research_command(ctx: PluginCommandContext,
                 return PluginCommandResponse(False, f'订阅记录同步emby库存失败，错误信息：未配置emby')
         elif task == "update":
             _LOGGER.info(f'更新插件版本')
-            update()
+            update_self()
             return PluginCommandResponse(True, f'更新版本完成')
+        elif task == "mdc":
+            _LOGGER.info(f'安装或更新MDC-NG')
+            install_update_mdc()
+            return PluginCommandResponse(True, f'安装或更新MDC-NG完成')
     except Exception as e:
         logging.error(f'订阅未下载重新搜索失败，错误信息：{e}', exc_info=True)
 
