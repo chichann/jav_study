@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.3.0](https://github.com/chichann/jav_study/compare/v1.2.23...v1.3.0) (2023-03-09)
+
+
+### Features
+
+* 增加安装或更新MDC-NG功能 ([c471513](https://github.com/chichann/jav_study/commit/c471513b3bf66924798e0241acb7bd802cda3551))
+
 ### [1.2.23](https://github.com/chichann/jav_study/compare/v1.2.22...v1.2.23) (2023-03-09)
 
 
