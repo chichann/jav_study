@@ -31,6 +31,7 @@ def get_weight(torrent_rank, min_size, max_size):
         weight = -1
     # 如果文件限制值为0，则表示无限制,跳过以下判断
     if min_size == 0 and max_size == 0:
+        _LOGGER.info(f'[{torrent_rank["site_id"]}]: {content}|最终权重为{weight}')
         return weight
     # 如果文件大小超过限制，权重为-1
     size = torrent_rank["size"]
@@ -126,7 +127,8 @@ def get_torrent_res(site_id, url, headers, cookies, proxies, timeout=30):
             if 'application/x-bittorrent' in res.headers.get('Content-Type'):
                 return res
             if 'google' in res.url:
-                _LOGGER.error('可能遭遇馒头限流，强制等待三到五分钟。')
+                _LOGGER.error(f'馒头重定向链接到{res.url}。')
+                _LOGGER.error('遭遇馒头限流，强制等待三到五分钟。')
                 wait_for_mteam()
                 continue
             if 'Cloudflare' in res.text:
