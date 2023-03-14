@@ -395,6 +395,7 @@ def torrent_main(code, task):
                 code_sub_result["pic"] = pic
                 add_download_list(code)
                 send_notify(f'{code_sub_result["sub_result"]}\n', code_sub_result["caption"], code_sub_result["pic"])
+                server.notify.send_system_message(to_uid=1, title=f'{code_sub_result["sub_result"]}\n', message=code_sub_result["caption"])
                 return code_sub_result
             else:
                 _LOGGER.info(f'「{code}」提交下载失败，可能是下载器已存在该种子')
