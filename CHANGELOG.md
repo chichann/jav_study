@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.4.0](https://github.com/chichann/jav_study/compare/v1.3.0...v1.4.0) (2023-03-14)
+
+
+### Features
+
+* 提交下载成功时发送系统通知 ([d846faf](https://github.com/chichann/jav_study/commit/d846faf75b8f3785dff01a4d797f901b1a1758a4))
+
+
+### Bug Fixes
+
+* 优化馒头限流时的日志提示 ([738ae7c](https://github.com/chichann/jav_study/commit/738ae7c2f14460363d2074558afb6c460b80367b))
+
 ## [1.3.0](https://github.com/chichann/jav_study/compare/v1.2.23...v1.3.0) (2023-03-09)
 
 
