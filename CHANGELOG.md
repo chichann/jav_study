@@ -1,5 +1,13 @@
 # Changelog
 
+### [1.4.1](https://github.com/chichann/jav_study/compare/v1.4.0...v1.4.1) (2023-03-28)
+
+
+### Bug Fixes
+
+* 推送可选无图模式 ([ee17632](https://github.com/chichann/jav_study/commit/ee17632c32a3ba874ef3b19c01971daf23a54005))
+* 远程搜索无结果不再强制等待 ([af38954](https://github.com/chichann/jav_study/commit/af38954906f428f4a0dae30d4cbd981b1d2830e2))
+
 ## [1.4.0](https://github.com/chichann/jav_study/compare/v1.3.0...v1.4.0) (2023-03-14)
 
 
