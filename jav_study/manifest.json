@@ -28,6 +28,13 @@
       "multiValue": true
     },
     {
+      "fieldName": "notify_with_img",
+      "fieldType": "Bool",
+      "label": "推送是否带图",
+      "helperText": "推送是否带图，取消勾选则不带图",
+      "defaultValue": true
+    },
+    {
       "fieldName": "proxy",
       "fieldType": "String",
       "label": "代理地址",

@@ -11,6 +11,7 @@ class event_var:
     def __init__(self):
         self.message_to_uid = None
         self.channel = None
+        self.notify_with_img = True
         self.proxies = None
         self.headers = None
         self.smms_token = ''
@@ -32,6 +33,7 @@ event_var = event_var()
 def after_setup(plugin_meta: PluginMeta, config: Dict[str, Any]):
     event_var.message_to_uid = config.get('uid')
     event_var.channel = config.get('ToChannelName')
+    event_var.notify_with_img = config.get('notify_with_img')
     proxy = config.get('proxy')
     if proxy:
         event_var.proxies = {
@@ -75,6 +77,7 @@ def after_setup(plugin_meta: PluginMeta, config: Dict[str, Any]):
 def config_changed(config: Dict[str, Any]):
     event_var.message_to_uid = config.get('uid')
     event_var.channel = config.get('ToChannelName')
+    event_var.notify_with_img = config.get('notify_with_img')
     proxy = config.get('proxy')
     if proxy:
         event_var.proxies = {

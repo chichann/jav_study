@@ -158,6 +158,8 @@ def wait_for_mteam():
 def send_notify(title, content, pic):
     from .event import event_var
     channel_item = event_var.channel
+    if not event_var.notify_with_img:
+        pic = ''
     if event_var.message_to_uid:
         for _ in event_var.message_to_uid:
             server.notify.send_message_by_tmpl('{{title}}', '{{a}}', {
