@@ -245,8 +245,8 @@ class javbus_crawl:
                 movies = soup.select('a.movie-box')
                 for movie in movies:
                     movie_url = movie.get('href')
-                    movie_code = movie.get('href').split('/')[-1]
                     movie_name = movie.select('div.photo-info > span')[0].contents[0]
+                    movie_code = movie.select('div.photo-info > span > date')[0].text
                     movie_date = movie.select('div.photo-info > span > date')[1].text
                     movie_actors = self.get_movie_actor(movie_url)
                     movie_list.append(
