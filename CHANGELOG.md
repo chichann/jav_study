@@ -1,5 +1,12 @@
 # Changelog
 
+### [1.4.2](https://github.com/chichann/jav_study/compare/v1.4.1...v1.4.2) (2023-04-02)
+
+
+### Bug Fixes
+
+* 修复订阅演员时页面解析可能出错的问题 ([2015971](https://github.com/chichann/jav_study/commit/20159713befcd9216d2d165f8d8e1e1b0f286288))
+
 ### [1.4.1](https://github.com/chichann/jav_study/compare/v1.4.0...v1.4.1) (2023-03-28)
 
 
