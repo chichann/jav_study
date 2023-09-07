@@ -13,10 +13,9 @@ from .download_client import download
 from .torrent import get_best_torrent, best_torrent_echo, download_torrent
 from .common import get_cache, set_cache, add_un_download_list, add_download_list, send_notify, judge_never_sub
 from .crawl import jav_crawl, site_torrent_crawl, javbus_crawl
-from .embyapi import EmbyApi
 
 server = mbot_api
-emby = EmbyApi()
+
 _LOGGER = logging.getLogger(__name__)
 torrent_folder = '/data/plugins/jav_study/torrents'
 if not os.path.exists(torrent_folder):
@@ -74,12 +73,24 @@ def un_download_research():
     _LOGGER.info('未下载列表重新搜索完成')
 
 
-def sync_emby_lib():
+def sync_media_server_lib():
+    from .media_server import Config, EmbyApi, PlexApi
+    media_server = Config().media_type
+    emby = EmbyApi()
+    plex = PlexApi()
     un_download_code = get_cache(sign='un_download_code') or []
-    in_lib_list = [item for item in un_download_code if emby.check_emby_item(item)]
+    in_lib_list = []
+    if media_server == 'emby':
+        for item in un_download_code:
+            if emby.check_emby_item(item):
+                in_lib_list.append(item)
+    elif media_server == 'plex':
+        for item in un_download_code:
+            if plex.search_by_keyword(item):
+                in_lib_list.append(item)
     if in_lib_list:
         for item in in_lib_list:
-            _LOGGER.info(f'「{item}」已经在emby库中，删除未下载列表中的记录')
+            _LOGGER.info(f'「{item}」已经在媒体库中，删除未下载列表中的记录')
             un_download_code.remove(item)
         set_cache(sign='un_download_code', value=un_download_code)
 
@@ -103,13 +114,19 @@ def refresh_actor_info():
 
 
 def search_list_judge_recorded(code_list_before):
+    from .media_server import Config, EmbyApi, PlexApi
+    media_server = Config().media_type
+    emby = EmbyApi()
+    plex = PlexApi()
     code_list = [item['av_id'] for item in code_list_before]
-    exist_list = (get_cache(sign='downloaded_code') or []) + (get_cache(sign='un_download_code') or []) + (get_cache(sign='like_list') or [])
+    exist_list = (get_cache(sign='downloaded_code') or []) + (get_cache(sign='un_download_code') or [])
     code_list_after = []
     for item in code_list:
         if item in exist_list:
             continue
-        if emby.is_emby and emby.check_emby_item(item):
+        if media_server == 'emby' and emby.check_emby_item(item):
+            continue
+        if media_server == 'plex' and plex.search_by_keyword(item):
             continue
         code_list_after.append(item)
     return code_list_after

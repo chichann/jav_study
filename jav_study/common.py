@@ -123,8 +123,10 @@ def add_download_list(code):
 
 
 def judge_never_sub(code):
-    from .embyapi import EmbyApi
+    from .media_server import Config, EmbyApi, PlexApi
+    media_server = Config().media_type
     emby = EmbyApi()
+    plex = PlexApi()
     exist_list = []
     un_download_code = get_cache(sign='un_download_code')
     downloaded_code = get_cache(sign='downloaded_code')
@@ -133,8 +135,14 @@ def judge_never_sub(code):
     if downloaded_code:
         exist_list.extend(downloaded_code)
     if code in exist_list:
+        _LOGGER.info(f'「{code}」已存在于未下载列表或已下载列表中，不会再重复下载。')
         return True
-    if emby.is_emby:
+    if media_server == 'plex':
+        plex_exist = plex.search_by_keyword(code)
+        if plex_exist:
+            _LOGGER.info(f'「{code}」已存在于Plex库中，不会再重复下载。')
+            return True
+    if media_server == 'emby':
         emby_exist = emby.check_emby_item(code)
         if emby_exist:
             _LOGGER.info(f'「{code}」已存在于Emby库中，不会再重复下载。')
