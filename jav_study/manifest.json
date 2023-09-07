@@ -28,6 +28,13 @@
       "multiValue": true
     },
     {
+      "fieldName": "media_server_name",
+      "fieldType": "String",
+      "label": "媒体服务器名称",
+      "helperText": "系统配置的媒体服务器名称。",
+      "defaultValue": ""
+    },
+    {
       "fieldName": "notify_with_img",
       "fieldType": "Bool",
       "label": "推送是否带图",

@@ -5,13 +5,11 @@ from mbot.openapi import mbot_api
 import logging
 
 from .jav_study import torrent_main, run_and_download_list, un_download_research, get_sub_code_list, delete_code_sub, \
-    sub_by_star, run_sub_star_record, get_sub_star_list, delete_star_sub, sync_emby_lib
+    sub_by_star, run_sub_star_record, get_sub_star_list, delete_star_sub, sync_media_server_lib
 from .common import set_true_code, add_un_download_list, judge_never_sub
 from .event import event_var
-from .embyapi import EmbyApi
 from .update import update_self, install_update_mdc
 
-emby = EmbyApi()
 server = mbot_api
 
 _LOGGER = logging.getLogger(__name__)
@@ -74,7 +72,7 @@ task_list = [
         "value": "sub_star"
     },
     {
-        "name": "订阅记录同步emby库存",
+        "name": "订阅记录同步媒体库",
         "value": "sub_sync"
     },
     {
@@ -111,14 +109,16 @@ def jav_sub_research_command(ctx: PluginCommandContext,
                 _LOGGER.error(f'未开启自动下载榜单TOP20,请先在配置中打开开关。')
                 return PluginCommandResponse(False, f'最受欢迎影片重新搜索失败，错误信息：未开启最受欢迎影片')
         elif task == "sub_sync":
-            if emby.is_emby:
-                _LOGGER.info(f'订阅记录同步emby库存')
-                sync_emby_lib()
-                _LOGGER.info(f'订阅记录同步emby库存完成')
-                return PluginCommandResponse(True, f'订阅记录同步emby库存完成')
+            from .media_server import Config
+            media_server = Config().media_type
+            if media_server:
+                _LOGGER.info(f'订阅记录同步媒体库库存')
+                sync_media_server_lib()
+                _LOGGER.info(f'订阅记录同步媒体库库存完成')
+                return PluginCommandResponse(True, f'订阅记录同步媒体库库存完成')
             else:
-                _LOGGER.error(f'订阅记录同步emby库存失败，错误信息：未配置emby')
-                return PluginCommandResponse(False, f'订阅记录同步emby库存失败，错误信息：未配置emby')
+                _LOGGER.error(f'订阅记录同步媒体库库存失败，错误信息：未配置媒体库')
+                return PluginCommandResponse(False, f'订阅记录同步媒体库库存失败，错误信息：未配置媒体库信息')
         elif task == "update":
             _LOGGER.info(f'更新插件版本')
             update_self()

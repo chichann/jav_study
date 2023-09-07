@@ -39,10 +39,12 @@ def research_star_sub_task():
     run_sub_star_record(task='local')
 
 
-@plugin.task('sync_emby_lib', '同步emby库存信息', cron_expression='0 */6 * * *')
-def sync_emby_lib_task():
-    if emby.is_emby:
-        sync_emby_lib()
+@plugin.task('sync_media_server_lib', '同步媒体库库存信息', cron_expression='0 */6 * * *')
+def sync_media_server_lib_task():
+    from .media_server import Config
+    media_server = Config().media_type
+    if media_server:
+        sync_media_server_lib()
 
 
 @plugin.task('refresh_movie_info', '刷新影片信息', cron_expression='1 0 * * *')

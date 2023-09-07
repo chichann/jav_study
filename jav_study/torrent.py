@@ -123,7 +123,7 @@ def download_torrent(code, torrent, torrents_folder):
 def get_torrent_res(site_id, url, headers, cookies, proxies, timeout=30):
     try:
         for i in range(3):
-            res = requests.get(url, headers=headers, cookies=cookies, proxies=proxies, timeout=timeout)
+            res = requests.get(url, headers=headers, cookies=cookies, proxies=proxies, timeout=timeout, allow_redirects=True)
             if 'application/x-bittorrent' in res.headers.get('Content-Type') or 'application/octet-stream' in res.headers.get('Content-Type'):
                 return res
             if 'google' in res.url:
