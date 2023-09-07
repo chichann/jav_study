@@ -1,5 +1,12 @@
 # Changelog
 
+### [1.5.1](https://github.com/chichann/jav_study/compare/v1.5.0...v1.5.1) (2023-09-07)
+
+
+### Bug Fixes
+
+* 修复引用错误等bug ([1dc9353](https://github.com/chichann/jav_study/commit/1dc9353de269b1e141e063565f873a2d54a7e242))
+
 ## [1.5.0](https://github.com/chichann/jav_study/compare/v1.4.2...v1.5.0) (2023-09-07)
 
 
