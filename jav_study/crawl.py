@@ -113,7 +113,7 @@ class jav_crawl:
                 video_info['av_actor'] = actor.rstrip(' / ')
                 video_info['av_date'] = video_date
                 video_info['av_genre'] = genre.rstrip(' / ')
-                video_info['av_img'] = 'https:' + av_img
+                video_info['av_img'] = av_img
                 return video_info
         except Exception as e:
             logging.error(f'图书馆详情页解析失败，原因为{e}', exc_info=True)
