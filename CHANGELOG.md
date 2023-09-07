@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.5.0](https://github.com/chichann/jav_study/compare/v1.4.2...v1.5.0) (2023-09-07)
+
+
+### Features
+
+* 增加plex媒体库支持 ([85009f0](https://github.com/chichann/jav_study/commit/85009f068ddb772e2a3fd15790aefdf72c8c540f))
+
+
+### Bug Fixes
+
+* 修复图片地址链接 ([341529a](https://github.com/chichann/jav_study/commit/341529a137d1892bba61c595c9064f74a416b810))
+* 修复馒头请求种子错误 ([63f3168](https://github.com/chichann/jav_study/commit/63f31689518976c68a37bf7262d5e828e5222562))
+
 ### [1.4.2](https://github.com/chichann/jav_study/compare/v1.4.1...v1.4.2) (2023-04-02)
 
 
