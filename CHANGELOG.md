@@ -1,5 +1,12 @@
 # Changelog
 
+### [1.5.2](https://github.com/chichann/jav_study/compare/v1.5.1...v1.5.2) (2023-09-07)
+
+
+### Bug Fixes
+
+* 修复init引入问题 ([889e2ee](https://github.com/chichann/jav_study/commit/889e2ee31d1b480e2d12f39073296c031e1d2b7f))
+
 ### [1.5.1](https://github.com/chichann/jav_study/compare/v1.5.0...v1.5.1) (2023-09-07)
 
 
