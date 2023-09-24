@@ -1,12 +1,13 @@
 import random
+import threading
+import time
+import logging
+from http.cookies import SimpleCookie
 
 from mbot.core.plugins import plugin
 from mbot.core.plugins import PluginContext, PluginMeta
 from mbot.openapi import mbot_api
-import threading
-import time
 
-import logging
 
 _LOGGER = logging.getLogger(__name__)
 server = mbot_api
@@ -55,18 +56,12 @@ def set_cache(sign, value):
         return False
 
 
-def str_cookies_to_dict(cookies):
-    dict_cookie = {}
-    str_cookie_list = cookies.split(';')
-    for cookie in str_cookie_list:
-        if cookie.strip(' '):
-            cookie_key_value = cookie.split('=')
-            if len(cookie_key_value) < 2:
-                continue
-            key = cookie_key_value[0]
-            value = cookie_key_value[1]
-            dict_cookie[key] = value
-    return dict_cookie
+def str_cookies_to_dict(cookie):
+    cookies = {}
+    cookie = SimpleCookie(cookie)
+    for key, morsel in cookie.items():
+        cookies[key] = morsel.value
+    return cookies
 
 
 def set_true_code(code):
