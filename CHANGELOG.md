@@ -1,5 +1,12 @@
 # Changelog
 
+### [1.5.3](https://github.com/chichann/jav_study/compare/v1.5.2...v1.5.3) (2023-09-24)
+
+
+### Bug Fixes
+
+* 优化种子下载逻辑 ([edf12ba](https://github.com/chichann/jav_study/commit/edf12bae3799b352df4658a50a5f845a52500ee3))
+
 ### [1.5.2](https://github.com/chichann/jav_study/compare/v1.5.1...v1.5.2) (2023-09-07)
 
 
