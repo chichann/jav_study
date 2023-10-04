@@ -1,5 +1,12 @@
 # Changelog
 
+### [1.5.4](https://github.com/chichann/jav_study/compare/v1.5.3...v1.5.4) (2023-10-04)
+
+
+### Bug Fixes
+
+* 解决BUS跳登录页面导致无法搜索的问题 ([8cd195b](https://github.com/chichann/jav_study/commit/8cd195b8c446b92a1d42c379ee2bab7f216b069b))
+
 ### [1.5.3](https://github.com/chichann/jav_study/compare/v1.5.2...v1.5.3) (2023-09-24)
 
 
