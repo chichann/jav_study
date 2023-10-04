@@ -137,17 +137,19 @@ class javbus_crawl:
             for host in self.hosts:
                 url = f"{host}/searchstar/{star}"
                 try:
-                    r = requests.get(url, headers=self.headers, proxies=self.proxies, timeout=30)
+                    r = requests.get(url, headers=self.headers, proxies=self.proxies, timeout=30, allow_redirects=False)
                     break
                 except Exception as e:
                     continue
             if not r:
+                _LOGGER.error(f"公交车搜索演员{star}失败")
                 return None
             soup = BeautifulSoup(r.text, 'html.parser')
             stars = soup.select('a.avatar-box')
             # if len(stars) > 1:
             #     return None
             if len(stars) < 1:
+                _LOGGER.error(f"找不到演员{star}的信息")
                 return None
             url = stars[0].get('href')
             star_id = url.split('/')[-1]
