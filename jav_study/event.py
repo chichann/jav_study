@@ -1,7 +1,8 @@
+import logging
+from typing import Dict, Any
+
 from mbot.core.plugins import plugin
 from mbot.core.plugins import PluginContext, PluginMeta
-from typing import Dict, Any
-import logging
 
 _LOGGER = logging.getLogger(__name__)
 

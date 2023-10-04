@@ -1,8 +1,8 @@
-from mbot.openapi import mbot_api
-
 import requests
 import logging
 from tenacity import retry, stop_after_delay, wait_exponential
+
+from mbot.openapi import mbot_api
 
 from .common import wait_for_mteam, str_cookies_to_dict
 from .event import event_var

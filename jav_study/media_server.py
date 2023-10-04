@@ -2,6 +2,7 @@ import requests
 import json
 import yaml
 import logging
+
 from .event import event_var
 
 _LOGGER = logging.getLogger(__name__)

@@ -1,8 +1,8 @@
+import logging
+
 from mbot.core.plugins import plugin, PluginCommandContext, PluginCommandResponse
 from mbot.core.params import ArgSchema, ArgType
 from mbot.openapi import mbot_api
-
-import logging
 
 from .jav_study import torrent_main, run_and_download_list, un_download_research, get_sub_code_list, delete_code_sub, \
     sub_by_star, run_sub_star_record, get_sub_star_list, delete_star_sub, sync_media_server_lib

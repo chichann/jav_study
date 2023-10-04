@@ -1,10 +1,10 @@
+import logging
+from flask import Blueprint, request
+
 from mbot.core.plugins import plugin
 from mbot.core.plugins import PluginContext, PluginMeta
 from mbot.openapi import mbot_api
 from mbot.common.flaskutils import api_result
-
-from flask import Blueprint, request
-import logging
 
 from .crawl import jav_crawl
 from .common import send_notify, add_un_download_list, jav_list_echo, judge_never_sub, set_true_code

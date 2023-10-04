@@ -1,8 +1,9 @@
+import requests
+import logging
+from bs4 import BeautifulSoup, SoupStrainer
+
 from moviebotapi.site import SearchType, SearchQuery, CateLevel1
 from mbot.openapi import mbot_api
-import requests
-from bs4 import BeautifulSoup, SoupStrainer
-import logging
 
 from .event import event_var
 from .common import wait_for_mteam
@@ -341,6 +342,7 @@ class site_torrent_crawl:
             else:
                 if task == 'remote':
                     _LOGGER.error(f'站点搜索{keyword}无结果，注意搜索频率，避免馒头限流。')
+                    # wait_for_mteam()
                 return None
         except Exception as e:
             logging.error(f'搜索种子出错，错误信息：{e}', exc_info=True)

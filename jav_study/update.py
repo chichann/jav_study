@@ -1,10 +1,13 @@
-from mbot.openapi import mbot_api
-from .event import event_var
 import logging
 import requests
 import os
 import zipfile
 import base64
+
+from mbot.openapi import mbot_api
+
+from .event import event_var
+
 server = mbot_api
 _LOGGER = logging.getLogger(__name__)
 
