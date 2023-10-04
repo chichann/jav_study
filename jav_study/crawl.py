@@ -217,7 +217,7 @@ class javbus_crawl:
             for host in self.hosts:
                 url = f"{host}/star/{star_id}"
                 try:
-                    r = requests.get(url, headers=self.headers, proxies=self.proxies, timeout=30)
+                    r = requests.get(url, headers=self.headers, proxies=self.proxies, timeout=30, allow_redirects=False)
                     break
                 except Exception as e:
                     continue
@@ -240,7 +240,7 @@ class javbus_crawl:
             movie_list = []
             while True:
                 url = f'https://www.javbus.com/star/{star_id}/{str(count)}'
-                r = requests.get(url, headers=self.headers, proxies=self.proxies, timeout=30)
+                r = requests.get(url, headers=self.headers, proxies=self.proxies, timeout=30, allow_redirects=False)
                 soup = BeautifulSoup(r.text, 'html.parser')
                 pages = soup.select('ul.pagination > li')
                 page = len(pages) - 1
@@ -264,7 +264,7 @@ class javbus_crawl:
 
     def get_movie_actor(self, url):
         try:
-            r = requests.get(url, headers=self.headers, proxies=self.proxies, timeout=30)
+            r = requests.get(url, headers=self.headers, proxies=self.proxies, timeout=30, allow_redirects=False)
             soup = BeautifulSoup(r.text, 'html.parser')
             actors = soup.select('span.genre:has(a[href^="https://www.javbus.com/star/"])')
             actor_list = []
