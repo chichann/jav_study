@@ -1,5 +1,12 @@
 # Changelog
 
+### [1.5.5](https://github.com/chichann/jav_study/compare/v1.5.4...v1.5.5) (2023-10-04)
+
+
+### Bug Fixes
+
+* 优化依赖的引入 ([7861f6d](https://github.com/chichann/jav_study/commit/7861f6df9f3245796b54bd222d08928ea16a0cee))
+
 ### [1.5.4](https://github.com/chichann/jav_study/compare/v1.5.3...v1.5.4) (2023-10-04)
 
 
