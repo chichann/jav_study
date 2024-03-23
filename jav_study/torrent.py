@@ -114,7 +114,10 @@ def download_torrent(code, torrent, torrents_folder):
         proxies = None
     cookies = str_cookies_to_dict(cookie)
     try:
-        res = get_torrent_res(site_id, torrent["download_url"], headers, cookies, proxies, timeout=30)
+        if site_id == 'mteam':
+            res = get_mteam_torrent_res(domain, torrent["torrent_id"], headers, cookie, proxies, timeout=30)
+        else:
+            res = get_torrent_res(site_id, torrent["download_url"], headers, cookies, proxies, timeout=30)
     except requests.exceptions.RequestException as e:
         _LOGGER.error(f'[{site_id}]请求失败：{str(e)}')
         return None
@@ -132,6 +135,37 @@ def download_torrent(code, torrent, torrents_folder):
 
 
 @retry(stop=stop_after_delay(300), wait=wait_exponential(multiplier=1, min=30, max=90), reraise=True)
+def get_mteam_torrent_res(domain, torrent_id, headers, cookies, proxies, timeout=180):
+    try:
+        headers["Content-Type"] = "application/x-www-form-urlencoded"
+        headers["Cookie"] = cookies
+        payload = f"id={torrent_id}"
+        res = requests.post(f"{domain}/api/torrent/genDlToken",
+                            headers=headers,
+                            proxies=proxies,
+                            data=payload,
+                            timeout=timeout,
+                            allow_redirects=True)
+        if res.status_code == 200:
+            j = res.json()
+            torrent_url = j.get('data')
+            if not torrent_url:
+                raise RetryException(f'未知错误，错误信息：{j}')
+            torrent_content = requests.get(torrent_url,
+                                           headers=headers,
+                                           proxies=proxies,
+                                           timeout=timeout,
+                                           allow_redirects=True)
+            torrent_content.raise_for_status()
+            return torrent_content
+        else:
+            _LOGGER.error(f"请求下载馒头失败：{res.text}", exc_info=True)
+    except Exception as e:
+        _LOGGER.error(f'请求种子失败，错误信息：{e}', exc_info=True)
+        return None
+
+
+@retry(stop=stop_after_delay(300), wait=wait_exponential(multiplier=1, min=30, max=90), reraise=True)
 def get_torrent_res(site_id, url, headers, cookies, proxies, timeout=180):
     try:
         res = requests.get(url, headers=headers, cookies=cookies, proxies=proxies, timeout=timeout,
@@ -142,11 +176,11 @@ def get_torrent_res(site_id, url, headers, cookies, proxies, timeout=180):
         if 'application/x-bittorrent' in res.headers.get(
                 'Content-Type') or 'application/octet-stream' in res.headers.get('Content-Type'):
             return res
-        if 'google' in res.url:
-            _LOGGER.error(f'馒头重定向链接到{res.url}。')
-            _LOGGER.error('遭遇馒头限流，强制等待三到五分钟。')
-            wait_for_mteam()
-            raise RetryException(f'遭遇馒头限流，强制等待三到五分钟。')
+        # if 'google' in res.url:
+        #     _LOGGER.error(f'馒头重定向链接到{res.url}。')
+        #     _LOGGER.error('遭遇馒头限流，强制等待三到五分钟。')
+        #     wait_for_mteam()
+        #     raise RetryException(f'遭遇馒头限流，强制等待三到五分钟。')
         if 'Cloudflare' in res.text:
             _LOGGER.error(f'[{site_id}]站点状态当前不可用，请检查可用性。')
             return None

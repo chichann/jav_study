@@ -27,7 +27,7 @@ def jav_sub_code_command(
         if judge_never_sub(code):
             _LOGGER.info(f'番号「{code}」已经订阅过了')
             return PluginCommandResponse(True, f'番号「{code}」已经订阅过了')
-        code_sub_result = torrent_main(code, task='remote')
+        code_sub_result = torrent_main(code, task='local')
         if code_sub_result["flag"] == 1:
             return PluginCommandResponse(True, f'番号「{code}」提交订阅成功')
         elif code_sub_result["flag"] == 0:

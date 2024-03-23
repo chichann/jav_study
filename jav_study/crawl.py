@@ -316,6 +316,7 @@ class site_torrent_crawl:
             torrents = []
             if search_result:
                 for item in search_result:
+                    torrent_id = item.id
                     site_id = item.site_id
                     name = item.name
                     size_mb = item.size_mb
@@ -326,6 +327,7 @@ class site_torrent_crawl:
                     download_count = item.download_count
                     upload_count = item.upload_count
                     torrent_rank = {
+                        "torrent_id": torrent_id,
                         "site_id": site_id,
                         "name": name,
                         "subject": subject,
