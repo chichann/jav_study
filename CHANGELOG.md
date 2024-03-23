@@ -1,5 +1,12 @@
 # Changelog
 
+### [1.5.6](https://github.com/chichann/jav_study/compare/v1.5.5...v1.5.6) (2024-03-23)
+
+
+### Bug Fixes
+
+* 🐛 适配馒头新接口 ([5284424](https://github.com/chichann/jav_study/commit/5284424f0cdce2f4a765b86530dbc36c752e1416))
+
 ### [1.5.5](https://github.com/chichann/jav_study/compare/v1.5.4...v1.5.5) (2023-10-04)
 
 
