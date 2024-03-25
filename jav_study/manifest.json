@@ -49,6 +49,13 @@
       "defaultValue": ""
     },
     {
+      "fieldName": "mt_apikey",
+      "fieldType": "String",
+      "label": "馒头站点的api令牌",
+      "helperText": "获取令牌入口: https://kp.m-team.cc/usercp?tab=laboratory",
+      "defaultValue": ""
+    },
+    {
       "fieldName": "user_agent",
       "fieldType": "String",
       "label": "访问网站的user-agent",

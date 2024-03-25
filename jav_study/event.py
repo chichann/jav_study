@@ -15,6 +15,7 @@ class event_var:
         self.notify_with_img = True
         self.proxies = None
         self.headers = None
+        self.mt_apikey = ''
         self.smms_token = ''
         self.client_name = ''
         self.down_path = ''
@@ -46,6 +47,7 @@ def after_setup(plugin_meta: PluginMeta, config: Dict[str, Any]):
     else:
         event_var.proxies = None
         _LOGGER.error('请确认你的网络环境能访问JAVLIBRARY，或者设置代理地址')
+    event_var.mt_apikey = config.get('mt_apikey')
     user_agent = config.get('user_agent')
     event_var.headers = {
         'User-Agent': user_agent
@@ -92,6 +94,7 @@ def config_changed(config: Dict[str, Any]):
         event_var.proxies = None
         _LOGGER.error('请确认你的网络环境能访问JAVLIBRARY，或者设置代理地址')
     user_agent = config.get('user_agent')
+    event_var.mt_apikey = config.get('mt_apikey')
     event_var.headers = {
         'User-Agent': user_agent
     }

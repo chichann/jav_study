@@ -138,7 +138,10 @@ def download_torrent(code, torrent, torrents_folder):
 def get_mteam_torrent_res(domain, torrent_id, headers, cookies, proxies, timeout=180):
     try:
         headers["Content-Type"] = "application/x-www-form-urlencoded"
-        headers["Cookie"] = cookies
+        if event_var.mt_apikey:
+            headers['x-api-key'] = event_var.mt_apikey
+        else:
+            headers["Cookie"] = cookies
         payload = f"id={torrent_id}"
         res = requests.post(f"{domain}/api/torrent/genDlToken",
                             headers=headers,
