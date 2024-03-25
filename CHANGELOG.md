@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.6.0](https://github.com/chichann/jav_study/compare/v1.5.6...v1.6.0) (2024-03-25)
+
+
+### Features
+
+* 🎸 支持馒头的api令牌访问 ([4b0099f](https://github.com/chichann/jav_study/commit/4b0099f7b0def37ac38dbdc10122429352bda85c))
+
 ### [1.5.6](https://github.com/chichann/jav_study/compare/v1.5.5...v1.5.6) (2024-03-23)
 
 
